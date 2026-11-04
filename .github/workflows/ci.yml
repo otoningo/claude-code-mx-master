@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Servidor MCP - dependencias y tests
+        working-directory: mcp-server
+        run: |
+          npm ci
+          npm test
+
+      - name: Archivos generados al día
+        run: node scripts/generate.mjs --check
+
+      - name: Compilar plugin contra el PluginApi.dll oficial (NuGet LogiPluginTool)
+        run: |
+          dotnet tool restore
+          VERSION=$(node -e 'console.log(require("./.config/dotnet-tools.json").tools.logiplugintool.version)')
+          echo "API=$HOME/.nuget/packages/logiplugintool/$VERSION/tools/net10.0/any/" >> "$GITHUB_ENV"
+      - run: dotnet build logi-plugin/src/ClaudeCodePlugin.csproj -c Release -p:PluginApiDir="$API" -p:LinkPlugin=false -warnaserror
+
+      - name: Paridad plugin C# <-> servidor MCP
+        run: |
+          dotnet build logi-plugin/stubs/PluginApi -c Release -o logi-plugin/stubs/PluginApi/out
+          STUB="$PWD/logi-plugin/stubs/PluginApi/out/"
+          dotnet run --project logi-plugin/tests/Parity -c Release -p:PluginApiDir="$STUB" -p:LinkPlugin=false > parity.json
+          node scripts/parity.mjs parity.json
+
+      - name: Empaquetar y verificar .lplug4
+        run: |
+          VERSION=$(sed -n 's/^version: *//p' logi-plugin/src/package/metadata/LoupedeckPackage.yaml)
+          # Recompila contra la API real (la prueba de paridad dejó la salida compilada contra el stub).
+          dotnet build logi-plugin/src/ClaudeCodePlugin.csproj -c Release -p:PluginApiDir="$API" -p:LinkPlugin=false --no-incremental
+          mkdir -p dist
+          dotnet tool run logiplugintool -- pack logi-plugin/bin/Release "dist/ClaudeCode_${VERSION}.lplug4"
+          dotnet tool run logiplugintool -- verify "dist/ClaudeCode_${VERSION}.lplug4"
+          cp profiles/ClaudeCode-ActionsRing.lp5 dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: claude-code-mx-master
+          path: dist/

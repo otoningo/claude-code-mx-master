@@ -1,0 +1,33 @@
+# Paquete del plugin para Logi Plugin Service (Logi Options+).
+type: plugin4
+
+# Id único. No puede terminar en "Plugin".
+name: ClaudeCode
+displayName: Claude Code
+description: Controla Claude Code Desktop desde el MX Master 4 (Actions Ring con botón háptico y botón de gestos) - nueva sesión, enviar ahora, aprobar todo, cambiar modelo, modo plan y más.
+
+pluginFileName: ClaudeCodePlugin.dll
+version: 0.1.0
+author: otoningo
+copyright: Copyright (c) 2026 otoningo
+
+pluginFolderWin: bin
+pluginFolderMac: bin
+
+supportedDevices:
+    - LoupedeckCtFamily
+
+pluginCapabilities:
+    # Plugin de aplicación: su perfil se activa cuando Claude Desktop está en primer plano.
+    - HasApplication
+    # Envía atajos de teclado a la aplicación vinculada.
+    - ActivatesApplication
+    # Vibraciones en el MX Master 4 (events/extra/eventMapping.yaml).
+    - HasHapticMapping
+
+minimumLoupedeckVersion: 6.0
+
+license: MIT
+licenseUrl: https://opensource.org/licenses/MIT
+homePageUrl: https://github.com/otoningo/claude-code-mx-master
+supportPageUrl: https://github.com/otoningo/claude-code-mx-master/issues

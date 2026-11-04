@@ -1,0 +1,18 @@
+# Generado por scripts/generate.mjs. No editar a mano.
+haptics:
+    claudeAction:
+        DEFAULT: sharp_state_change
+    claudeNavigate:
+        DEFAULT: subtle_collision
+    claudeSession:
+        DEFAULT: damp_state_change
+    claudeSend:
+        DEFAULT: completed
+    claudeStop:
+        DEFAULT: sharp_collision
+    claudeApprove:
+        DEFAULT: happy_alert
+    claudeModel:
+        DEFAULT: damp_collision
+    claudeError:
+        DEFAULT: angry_alert

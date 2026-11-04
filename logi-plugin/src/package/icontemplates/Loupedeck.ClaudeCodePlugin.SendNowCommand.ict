@@ -1,0 +1,21 @@
+{
+  "backgroundColor": 4292441943,
+  "items": [
+    {
+      "$type": "Loupedeck.Service.ActionIconImageItem, LoupedeckShared",
+      "image": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTMgMkw0IDE0aDdsLTEgOCA5LTEyaC03eiIvPjwvc3ZnPgo=",
+      "imageFileName": "Loupedeck.ClaudeCodePlugin.SendNowCommand.svg",
+      "imageColor": 4294967295,
+      "imageRotation": "None",
+      "isVisible": true,
+      "itemType": "Image",
+      "area": {
+        "x": 20,
+        "y": 20,
+        "width": 60,
+        "height": 60,
+        "isFullScreen": false
+      }
+    }
+  ]
+}

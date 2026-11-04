@@ -1,0 +1,14 @@
+{
+  "$comment": "Distribución del Actions Ring (botón háptico del MX Master 4). 8 burbujas; 'folder' abre un sub-anillo. Edítalo y ejecuta `node scripts/generate.mjs` para regenerar profiles/ClaudeCode-ActionsRing.lp5.",
+  "profileName": "Claude Code - MX Master 4",
+  "slots": [
+    "new-session",
+    "send-now",
+    "approve-all",
+    {"folder": "Modelo", "icon": "sparkles", "actions": ["model-1", "model-2", "model-3", "model-menu", "effort-menu"]},
+    "stop",
+    "plan-mode",
+    {"folder": "Vista", "icon": "eye", "actions": ["toggle-diff", "toggle-terminal", "toggle-browser", "side-chat", "cycle-view", "close-pane", "show-shortcuts"]},
+    {"folder": "Más", "icon": "list", "actions": ["send", "accept-suggestion", "auto-mode", "manual-mode", "permission-menu", "compact", "context", "code-review"]}
+  ]
+}

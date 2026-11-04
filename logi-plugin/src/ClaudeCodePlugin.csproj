@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Loupedeck.ClaudeCodePlugin</RootNamespace>
+    <AssemblyName>ClaudeCodePlugin</AssemblyName>
+    <Version>0.1.0</Version>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- PluginApi.dll viene con Logi Options+ (Logi Plugin Service). Se puede sobreescribir con -p:PluginApiDir=... -->
+    <PluginApiDir Condition="'$(PluginApiDir)' == '' And '$(OS)' == 'Windows_NT'">C:\Program Files\Logi\LogiPluginService\</PluginApiDir>
+    <PluginApiDir Condition="'$(PluginApiDir)' == '' And '$(OS)' != 'Windows_NT'">/Applications/Utilities/LogiPluginService.app/Contents/MonoBundle/</PluginApiDir>
+
+    <PluginDir Condition="'$(OS)' == 'Windows_NT'">$(LocalAppData)\Logi\LogiPluginService\Plugins\</PluginDir>
+    <PluginDir Condition="'$(OS)' != 'Windows_NT'">$(HOME)/Library/Application Support/Logi/LogiPluginService/Plugins/</PluginDir>
+
+    <BaseOutputPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../bin/'))</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)/bin/</OutputPath>
+
+    <PluginShortName>ClaudeCode</PluginShortName>
+    <!-- Pon LinkPlugin=false para compilar sin registrar el plugin en Logi Plugin Service (p. ej. en CI). -->
+    <LinkPlugin Condition="'$(LinkPlugin)' == ''">true</LinkPlugin>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="PluginApi">
+      <HintPath>$(PluginApiDir)PluginApi.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- El catálogo de acciones es el mismo que usa el servidor MCP. -->
+  <ItemGroup>
+    <EmbeddedResource Include="../../shared/actions.json" LogicalName="ClaudeCode.actions.json" />
+    <EmbeddedResource Include="../../shared/config.default.json" LogicalName="ClaudeCode.config.default.json" />
+    <None Include="package/**/*" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+
+  <Target Name="CheckPluginApi" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(PluginApiDir)PluginApi.dll')" Text="No se encontró PluginApi.dll en '$(PluginApiDir)'. Instala Logi Options+ o pasa -p:PluginApiDir=&lt;carpeta que contiene PluginApi.dll&gt;." />
+  </Target>
+
+  <Target Name="CopyPackage" AfterTargets="Build">
+    <ItemGroup>
+      <PackageFiles Include="package/**/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PackageFiles)" DestinationFiles="@(PackageFiles->'$(BaseOutputPath)$(Configuration)/%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="LinkPluginToService" AfterTargets="CopyPackage" Condition="'$(LinkPlugin)' == 'true'">
+    <MakeDir Directories="$(PluginDir)" />
+    <WriteLinesToFile File="$(PluginDir)ClaudeCodePlugin.link" Lines="$([System.IO.Path]::GetFullPath('$(BaseOutputPath)$(Configuration)/'))" Overwrite="true" />
+    <Message Text="Plugin enlazado en $(PluginDir)ClaudeCodePlugin.link" Importance="High" />
+    <Exec Condition="'$(OS)' == 'Windows_NT'" Command="start loupedeck:plugin/$(PluginShortName)/reload" ContinueOnError="true" />
+    <Exec Condition="'$(OS)' != 'Windows_NT'" Command="open loupedeck:plugin/$(PluginShortName)/reload" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="UnlinkPlugin">
+    <Delete Files="$(PluginDir)ClaudeCodePlugin.link" />
+  </Target>
+
+</Project>

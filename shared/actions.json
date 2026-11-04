@@ -1,0 +1,307 @@
+{
+  "$comment": "Catálogo único de acciones de Claude Code Desktop. Lo usan el plugin de Logi Options+ (C#), el servidor MCP (Node) y el generador del perfil del Actions Ring. Pasos: 'mod' = Cmd en macOS / Ctrl en Windows; 'ctrl' es Ctrl en ambos. Un paso puede ser un atajo ('mod+shift+i'), una tecla ('esc'), {\"text\": \"...\"} para escribir texto, {\"wait\": ms} para esperar, o un placeholder '${ruta.en.config}' que se resuelve con el número de opción del menú configurado.",
+  "version": 1,
+  "groups": {
+    "session": "Sesiones",
+    "prompt": "Prompt",
+    "permissions": "Permisos",
+    "model": "Modelo",
+    "view": "Vista",
+    "commands": "Comandos"
+  },
+  "actions": [
+    {
+      "id": "new-session",
+      "className": "NewSessionCommand",
+      "displayName": "Nueva sesión",
+      "description": "Abre una sesión nueva de Claude Code (Cmd/Ctrl+N)",
+      "group": "session",
+      "icon": "plus",
+      "haptic": "claudeSession",
+      "steps": ["mod+n"]
+    },
+    {
+      "id": "close-session",
+      "className": "CloseSessionCommand",
+      "displayName": "Cerrar sesión",
+      "description": "Cierra la sesión actual (Cmd/Ctrl+W)",
+      "group": "session",
+      "icon": "x",
+      "haptic": "claudeAction",
+      "steps": ["mod+w"]
+    },
+    {
+      "id": "next-session",
+      "className": "NextSessionCommand",
+      "displayName": "Sesión siguiente",
+      "description": "Va a la siguiente sesión (Cmd/Ctrl+Shift+])",
+      "group": "session",
+      "icon": "arrow-right",
+      "haptic": "claudeNavigate",
+      "steps": ["mod+shift+]"]
+    },
+    {
+      "id": "previous-session",
+      "className": "PreviousSessionCommand",
+      "displayName": "Sesión anterior",
+      "description": "Va a la sesión anterior (Cmd/Ctrl+Shift+[)",
+      "group": "session",
+      "icon": "arrow-left",
+      "haptic": "claudeNavigate",
+      "steps": ["mod+shift+["]
+    },
+    {
+      "id": "send",
+      "className": "SendCommand",
+      "displayName": "Enviar",
+      "description": "Envía el mensaje escrito (Enter). Si Claude está trabajando, el mensaje se entrega al terminar la acción en curso.",
+      "group": "prompt",
+      "icon": "send",
+      "haptic": "claudeSend",
+      "steps": ["enter"]
+    },
+    {
+      "id": "send-now",
+      "className": "SendNowCommand",
+      "displayName": "Enviar ahora",
+      "description": "Detiene la respuesta en curso (Esc) y envía de inmediato lo que tienes escrito (Enter)",
+      "group": "prompt",
+      "icon": "bolt",
+      "haptic": "claudeSend",
+      "steps": ["esc", {"wait": "${timing.afterStopMs}"}, "enter"]
+    },
+    {
+      "id": "stop",
+      "className": "StopCommand",
+      "displayName": "Detener",
+      "description": "Detiene la respuesta de Claude (Esc)",
+      "group": "prompt",
+      "icon": "stop",
+      "haptic": "claudeStop",
+      "steps": ["esc"]
+    },
+    {
+      "id": "accept-suggestion",
+      "className": "AcceptSuggestionCommand",
+      "displayName": "Aceptar sugerencia",
+      "description": "Acepta el prompt sugerido cuando la caja está vacía (Tab)",
+      "group": "prompt",
+      "icon": "check",
+      "haptic": "claudeAction",
+      "steps": ["tab"]
+    },
+    {
+      "id": "approve-all",
+      "className": "ApproveAllCommand",
+      "displayName": "Aprobar todo",
+      "description": "Cambia el modo de permisos a 'Accept edits': Claude aplica las ediciones sin pedir aprobación una por una",
+      "group": "permissions",
+      "icon": "check-all",
+      "haptic": "claudeApprove",
+      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.acceptEdits}"]
+    },
+    {
+      "id": "auto-mode",
+      "className": "AutoModeCommand",
+      "displayName": "Modo Auto",
+      "description": "Cambia el modo de permisos a 'Auto'",
+      "group": "permissions",
+      "icon": "robot",
+      "haptic": "claudeApprove",
+      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.auto}"]
+    },
+    {
+      "id": "plan-mode",
+      "className": "PlanModeCommand",
+      "displayName": "Modo Plan",
+      "description": "Cambia el modo de permisos a 'Plan': Claude investiga y propone un plan sin editar código",
+      "group": "permissions",
+      "icon": "list",
+      "haptic": "claudeAction",
+      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.plan}"]
+    },
+    {
+      "id": "manual-mode",
+      "className": "ManualModeCommand",
+      "displayName": "Modo Manual",
+      "description": "Vuelve al modo de permisos 'Manual' (pide aprobación para cada cambio)",
+      "group": "permissions",
+      "icon": "shield",
+      "haptic": "claudeAction",
+      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.manual}"]
+    },
+    {
+      "id": "permission-menu",
+      "className": "PermissionMenuCommand",
+      "displayName": "Menú de permisos",
+      "description": "Abre el menú de modo de permisos (Cmd/Ctrl+Shift+M)",
+      "group": "permissions",
+      "icon": "shield",
+      "haptic": "claudeAction",
+      "steps": ["mod+shift+m"]
+    },
+    {
+      "id": "model-menu",
+      "className": "ModelMenuCommand",
+      "displayName": "Cambiar modelo",
+      "description": "Abre el menú de modelos (Cmd/Ctrl+Shift+I); elige con 1-9",
+      "group": "model",
+      "icon": "sparkles",
+      "haptic": "claudeModel",
+      "steps": ["mod+shift+i"]
+    },
+    {
+      "id": "model-1",
+      "className": "ModelSlot1Command",
+      "displayName": "Modelo 1",
+      "displayNameFrom": "models.0.label",
+      "description": "Selecciona el primer modelo configurado (por defecto Opus)",
+      "group": "model",
+      "icon": "sparkles",
+      "haptic": "claudeModel",
+      "steps": ["mod+shift+i", {"wait": "${timing.menuOpenMs}"}, "${models.0.menuIndex}"]
+    },
+    {
+      "id": "model-2",
+      "className": "ModelSlot2Command",
+      "displayName": "Modelo 2",
+      "displayNameFrom": "models.1.label",
+      "description": "Selecciona el segundo modelo configurado (por defecto Sonnet)",
+      "group": "model",
+      "icon": "sparkles",
+      "haptic": "claudeModel",
+      "steps": ["mod+shift+i", {"wait": "${timing.menuOpenMs}"}, "${models.1.menuIndex}"]
+    },
+    {
+      "id": "model-3",
+      "className": "ModelSlot3Command",
+      "displayName": "Modelo 3",
+      "displayNameFrom": "models.2.label",
+      "description": "Selecciona el tercer modelo configurado (por defecto Haiku)",
+      "group": "model",
+      "icon": "sparkles",
+      "haptic": "claudeModel",
+      "steps": ["mod+shift+i", {"wait": "${timing.menuOpenMs}"}, "${models.2.menuIndex}"]
+    },
+    {
+      "id": "effort-menu",
+      "className": "EffortMenuCommand",
+      "displayName": "Esfuerzo",
+      "description": "Abre el menú de esfuerzo/razonamiento (Cmd/Ctrl+Shift+E)",
+      "group": "model",
+      "icon": "gauge",
+      "haptic": "claudeModel",
+      "steps": ["mod+shift+e"]
+    },
+    {
+      "id": "toggle-diff",
+      "className": "ToggleDiffCommand",
+      "displayName": "Panel de diff",
+      "description": "Muestra/oculta el panel de cambios (Cmd/Ctrl+Shift+D)",
+      "group": "view",
+      "icon": "diff",
+      "haptic": "claudeAction",
+      "steps": ["mod+shift+d"]
+    },
+    {
+      "id": "toggle-terminal",
+      "className": "ToggleTerminalCommand",
+      "displayName": "Terminal",
+      "description": "Muestra/oculta el panel de terminal (Ctrl+`)",
+      "group": "view",
+      "icon": "terminal",
+      "haptic": "claudeAction",
+      "steps": ["ctrl+`"]
+    },
+    {
+      "id": "toggle-browser",
+      "className": "ToggleBrowserCommand",
+      "displayName": "Navegador",
+      "description": "Muestra/oculta el panel del navegador (Cmd/Ctrl+Shift+B)",
+      "group": "view",
+      "icon": "globe",
+      "haptic": "claudeAction",
+      "steps": ["mod+shift+b"]
+    },
+    {
+      "id": "side-chat",
+      "className": "SideChatCommand",
+      "displayName": "Chat lateral",
+      "description": "Abre el chat lateral (Cmd/Ctrl+;)",
+      "group": "view",
+      "icon": "chat",
+      "haptic": "claudeAction",
+      "steps": ["mod+;"]
+    },
+    {
+      "id": "cycle-view",
+      "className": "CycleViewCommand",
+      "displayName": "Cambiar vista",
+      "description": "Rota entre los modos de vista (Ctrl+O)",
+      "group": "view",
+      "icon": "eye",
+      "haptic": "claudeAction",
+      "steps": ["ctrl+o"]
+    },
+    {
+      "id": "close-pane",
+      "className": "ClosePaneCommand",
+      "displayName": "Cerrar panel",
+      "description": "Cierra el panel enfocado (Cmd/Ctrl+\\)",
+      "group": "view",
+      "icon": "panel-close",
+      "haptic": "claudeAction",
+      "steps": ["mod+\\"]
+    },
+    {
+      "id": "show-shortcuts",
+      "className": "ShowShortcutsCommand",
+      "displayName": "Atajos",
+      "description": "Muestra los atajos de teclado de Claude Desktop (Cmd/Ctrl+/)",
+      "group": "view",
+      "icon": "keyboard",
+      "haptic": "claudeAction",
+      "steps": ["mod+/"]
+    },
+    {
+      "id": "compact",
+      "className": "CompactCommand",
+      "displayName": "/compact",
+      "description": "Escribe y envía /compact para resumir el contexto (usar con la caja de texto vacía)",
+      "group": "commands",
+      "icon": "compress",
+      "haptic": "claudeSend",
+      "steps": [{"text": "/compact"}, {"wait": "${timing.afterTextMs}"}, "enter"]
+    },
+    {
+      "id": "context",
+      "className": "ContextCommand",
+      "displayName": "/context",
+      "description": "Escribe y envía /context para ver el uso del contexto (usar con la caja de texto vacía)",
+      "group": "commands",
+      "icon": "gauge",
+      "haptic": "claudeSend",
+      "steps": [{"text": "/context"}, {"wait": "${timing.afterTextMs}"}, "enter"]
+    },
+    {
+      "id": "code-review",
+      "className": "CodeReviewCommand",
+      "displayName": "/code-review",
+      "description": "Escribe y envía /code-review para revisar el diff actual (usar con la caja de texto vacía)",
+      "group": "commands",
+      "icon": "review",
+      "haptic": "claudeSend",
+      "steps": [{"text": "/code-review"}, {"wait": "${timing.afterTextMs}"}, "enter"]
+    }
+  ],
+  "haptics": {
+    "claudeAction": {"displayName": "Acción de Claude", "description": "Se ejecutó una acción de Claude Code", "waveform": "sharp_state_change"},
+    "claudeNavigate": {"displayName": "Navegación", "description": "Cambio de sesión", "waveform": "subtle_collision"},
+    "claudeSession": {"displayName": "Nueva sesión", "description": "Se abrió una sesión nueva", "waveform": "damp_state_change"},
+    "claudeSend": {"displayName": "Mensaje enviado", "description": "Se envió un mensaje o comando", "waveform": "completed"},
+    "claudeStop": {"displayName": "Detenido", "description": "Se detuvo la respuesta de Claude", "waveform": "sharp_collision"},
+    "claudeApprove": {"displayName": "Aprobado", "description": "Se activó la aprobación automática", "waveform": "happy_alert"},
+    "claudeModel": {"displayName": "Modelo", "description": "Cambio de modelo o esfuerzo", "waveform": "damp_collision"},
+    "claudeError": {"displayName": "Error", "description": "Una acción falló (p. ej. falta permiso de accesibilidad)", "waveform": "angry_alert"}
+  }
+}

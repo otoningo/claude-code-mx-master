@@ -1,0 +1,28 @@
+# Generado por scripts/generate.mjs. No editar a mano.
+displayName: Claude Code
+description: Vibraciones del MX Master 4 para las acciones de Claude Code Desktop
+events:
+    - name: claudeAction
+      displayName: "Acción de Claude"
+      description: "Se ejecutó una acción de Claude Code"
+    - name: claudeNavigate
+      displayName: "Navegación"
+      description: "Cambio de sesión"
+    - name: claudeSession
+      displayName: "Nueva sesión"
+      description: "Se abrió una sesión nueva"
+    - name: claudeSend
+      displayName: "Mensaje enviado"
+      description: "Se envió un mensaje o comando"
+    - name: claudeStop
+      displayName: "Detenido"
+      description: "Se detuvo la respuesta de Claude"
+    - name: claudeApprove
+      displayName: "Aprobado"
+      description: "Se activó la aprobación automática"
+    - name: claudeModel
+      displayName: "Modelo"
+      description: "Cambio de modelo o esfuerzo"
+    - name: claudeError
+      displayName: "Error"
+      description: "Una acción falló (p. ej. falta permiso de accesibilidad)"
