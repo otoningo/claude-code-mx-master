@@ -4,7 +4,7 @@ type: plugin4
 # Id único. No puede terminar en "Plugin".
 name: ClaudeCode
 displayName: Claude Code
-description: Controla Claude Code Desktop desde el MX Master 4 (Actions Ring con botón háptico y botón de gestos) - nueva sesión, enviar ahora, aprobar todo, cambiar modelo, modo plan y más.
+description: Control Claude Code Desktop from the Logitech MX Master 4 (haptic Actions Ring and gesture button) - new session, send now, approve all, switch model, plan mode and more.
 
 pluginFileName: ClaudeCodePlugin.dll
 version: 0.1.0

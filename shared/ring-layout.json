@@ -1,15 +1,58 @@
 {
-  "$comment": "Distribución del Actions Ring (botón háptico del MX Master 4). 8 burbujas; 'folder' abre un sub-anillo. Edítalo y ejecuta `node scripts/generate.mjs` para regenerar profiles/ClaudeCode-ActionsRing.lp5.",
+  "$comment": "Distribución del Actions Ring (botón háptico del MX Master 4). 8 burbujas en sentido horario desde arriba; 'folder' abre un sub-anillo ('folderEn' = nombre en inglés). Edítalo y ejecuta `node scripts/generate.mjs` para regenerar profiles/ClaudeCode-ActionsRing-{es,en}.lp5.",
   "profileName": "Claude Code - MX Master 4",
-  "iconColors": {"$comment": "Mismo estilo que las burbujas nativas del Actions Ring: fondo gris claro, ícono negro.", "background": "#D8D8D8", "foreground": "#000000"},
+  "iconColors": {
+    "$comment": "Mismo estilo que las burbujas nativas del Actions Ring: fondo gris claro, ícono negro.",
+    "background": "#D8D8D8",
+    "foreground": "#000000"
+  },
   "slots": [
     "new-session",
     "send-now",
     "approve-all",
-    {"folder": "Modelo", "icon": "sparkles", "actions": ["model-1", "model-2", "model-3", "model-menu", "effort-menu"]},
+    {
+      "folder": "Modelo",
+      "icon": "sparkles",
+      "actions": [
+        "model-1",
+        "model-2",
+        "model-3",
+        "model-menu",
+        "effort-menu"
+      ],
+      "folderEn": "Model"
+    },
     "stop",
     "plan-mode",
-    {"folder": "Vista", "icon": "eye", "actions": ["toggle-diff", "toggle-terminal", "toggle-browser", "side-chat", "cycle-view", "close-pane", "show-shortcuts"]},
-    {"folder": "Más", "icon": "dots", "actions": ["send", "accept-suggestion", "auto-mode", "manual-mode", "permission-menu", "compact", "context", "code-review"]}
-  ]
+    {
+      "folder": "Vista",
+      "icon": "eye",
+      "actions": [
+        "toggle-diff",
+        "toggle-terminal",
+        "toggle-browser",
+        "side-chat",
+        "cycle-view",
+        "close-pane",
+        "show-shortcuts"
+      ],
+      "folderEn": "View"
+    },
+    {
+      "folder": "Más",
+      "icon": "dots",
+      "actions": [
+        "send",
+        "accept-suggestion",
+        "auto-mode",
+        "manual-mode",
+        "permission-menu",
+        "compact",
+        "context",
+        "code-review"
+      ],
+      "folderEn": "More"
+    }
+  ],
+  "profileNameEn": "Claude Code - MX Master 4"
 }

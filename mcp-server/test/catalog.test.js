@@ -1,11 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { loadCatalog, loadConfig, resolveSteps, parseChord, deepMerge, findAction, displayNameFor } from "../src/catalog.js";
+import { loadCatalog, loadConfig, resolveSteps, parseChord, deepMerge, findAction, displayNameFor, localize, resolveLanguage, loadStrings } from "../src/catalog.js";
 import { buildAppleScript } from "../src/senders/mac.js";
 import { buildWindowsPlan } from "../src/senders/windows.js";
 
 const catalog = loadCatalog();
-const config = loadConfig({ userFile: null });
+const config = { ...loadConfig({ userFile: null }), language: "es" };
 
 test("cada acción resuelve sus pasos sin errores", () => {
   for (const action of catalog.actions) {
@@ -76,4 +76,20 @@ test("el plan de Windows lleva procesos y mapeo de teclado", () => {
   assert.deepEqual(plan.processNames, ["claude"]);
   assert.equal(plan.keyMapping, "layout");
   assert.equal(plan.steps[0].key, "n");
+});
+
+test("idioma: auto detecta español del sistema y el resto cae a inglés", () => {
+  assert.equal(resolveLanguage({ language: "auto" }, { LANG: "es_DO.UTF-8" }), "es");
+  assert.equal(resolveLanguage({ language: "auto" }, { LANG: "en_US.UTF-8" }), "en");
+  assert.equal(resolveLanguage({ language: "en" }, { LANG: "es_DO.UTF-8" }), "en");
+});
+
+test("todas las acciones y grupos tienen traducción al inglés", () => {
+  const en = loadStrings("en");
+  for (const a of catalog.actions) assert.ok(en.actions[a.id]?.displayName && en.actions[a.id]?.description, a.id);
+  for (const g of Object.keys(catalog.groups)) assert.ok(en.groups[g], g);
+  for (const h of Object.keys(catalog.haptics)) assert.ok(en.haptics[h], h);
+  const enConfig = { ...config, language: "en" };
+  assert.equal(displayNameFor(findAction(catalog, "model-1"), enConfig), "Model: Opus");
+  assert.deepEqual(localize(findAction(catalog, "approve-all"), enConfig, catalog).group, "Permissions");
 });

@@ -18,14 +18,17 @@ public abstract class ClaudeCommandBase : PluginDynamicCommand
     }
 
     private ClaudeCommandBase(ActionDefinition action)
-        : base(action.DisplayName, action.Description, action.GroupDisplayName)
+        : base(
+            Localizer.DisplayName(action, ConfigStore.Load()),
+            Localizer.Description(action, ConfigStore.Load()),
+            Localizer.Group(action, ConfigStore.Load()))
     {
         this._action = action;
     }
 
     protected override void RunCommand(string actionParameter) => _ = this.ExecuteAsync();
 
-    // El nombre de los atajos "Modelo 1/2/3" sale de la configuración (p. ej. "Modelo: Opus").
+    // Nombre en el idioma configurado; "Modelo 1/2/3" toma la etiqueta de la config (p. ej. "Modelo: Opus" / "Model: Opus").
     protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
     {
         try

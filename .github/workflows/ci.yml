@@ -39,8 +39,10 @@ jobs:
         run: |
           dotnet build logi-plugin/stubs/PluginApi -c Release -o logi-plugin/stubs/PluginApi/out
           STUB="$PWD/logi-plugin/stubs/PluginApi/out/"
-          dotnet run --project logi-plugin/tests/Parity -c Release -p:PluginApiDir="$STUB" -p:LinkPlugin=false > parity.json
-          node scripts/parity.mjs parity.json
+          for cfg in logi-plugin/tests/Parity/configs/*.json; do
+            dotnet run --project logi-plugin/tests/Parity -c Release -p:PluginApiDir="$STUB" -p:LinkPlugin=false -- "$cfg" > parity.json
+            node scripts/parity.mjs parity.json "$cfg"
+          done
 
       - name: Empaquetar y verificar .lplug4
         run: |
@@ -50,7 +52,7 @@ jobs:
           mkdir -p dist
           dotnet tool run logiplugintool -- pack logi-plugin/bin/Release "dist/ClaudeCode_${VERSION}.lplug4"
           dotnet tool run logiplugintool -- verify "dist/ClaudeCode_${VERSION}.lplug4"
-          cp profiles/ClaudeCode-ActionsRing.lp5 dist/
+          cp profiles/*.lp5 dist/
 
       - uses: actions/upload-artifact@v4
         with:

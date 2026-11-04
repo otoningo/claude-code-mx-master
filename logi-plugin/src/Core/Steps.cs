@@ -48,19 +48,7 @@ public static partial class StepResolver
         return steps;
     }
 
-    public static string DisplayName(ActionDefinition action, JsonObject config)
-    {
-        if (!string.IsNullOrEmpty(action.DisplayNameFrom))
-        {
-            var label = ConfigStore.GetPath(config, action.DisplayNameFrom)?.ToString();
-            if (!string.IsNullOrWhiteSpace(label))
-            {
-                return $"Modelo: {label}";
-            }
-        }
-
-        return action.DisplayName;
-    }
+    public static string DisplayName(ActionDefinition action, JsonObject config) => Localizer.DisplayName(action, config);
 
     private static string ResolveValue(JsonNode node, JsonObject config, string actionId)
     {

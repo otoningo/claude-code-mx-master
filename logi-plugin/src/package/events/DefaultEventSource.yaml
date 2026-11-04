@@ -1,28 +1,28 @@
 # Generado por scripts/generate.mjs. No editar a mano.
 displayName: Claude Code
-description: Vibraciones del MX Master 4 para las acciones de Claude Code Desktop
+description: MX Master 4 haptic feedback for Claude Code Desktop actions
 events:
     - name: claudeAction
-      displayName: "Acción de Claude"
-      description: "Se ejecutó una acción de Claude Code"
+      displayName: "Claude action"
+      description: "A Claude Code action ran"
     - name: claudeNavigate
-      displayName: "Navegación"
-      description: "Cambio de sesión"
+      displayName: "Navigation"
+      description: "Switched session"
     - name: claudeSession
-      displayName: "Nueva sesión"
-      description: "Se abrió una sesión nueva"
+      displayName: "New session"
+      description: "A new session was opened"
     - name: claudeSend
-      displayName: "Mensaje enviado"
-      description: "Se envió un mensaje o comando"
+      displayName: "Message sent"
+      description: "A message or command was sent"
     - name: claudeStop
-      displayName: "Detenido"
-      description: "Se detuvo la respuesta de Claude"
+      displayName: "Stopped"
+      description: "Claude's response was stopped"
     - name: claudeApprove
-      displayName: "Aprobado"
-      description: "Se activó la aprobación automática"
+      displayName: "Approved"
+      description: "Automatic approval was turned on"
     - name: claudeModel
-      displayName: "Modelo"
-      description: "Cambio de modelo o esfuerzo"
+      displayName: "Model"
+      description: "Model or effort changed"
     - name: claudeError
       displayName: "Error"
-      description: "Una acción falló (p. ej. falta permiso de accesibilidad)"
+      description: "An action failed (e.g. missing Accessibility permission)"

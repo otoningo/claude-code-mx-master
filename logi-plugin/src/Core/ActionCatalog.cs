@@ -150,6 +150,11 @@ public static class ConfigStore
 
     public static JsonNode GetPath(JsonNode node, string dotted)
     {
+        if (node == null)
+        {
+            return null;
+        }
+
         foreach (var part in dotted.Split('.'))
         {
             node = node switch

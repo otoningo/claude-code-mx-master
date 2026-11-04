@@ -1,109 +1,127 @@
-# Configurar el MX Master 4 para Claude Code Desktop
+# Set up the MX Master 4 for Claude Code Desktop
 
-Todo se hace en un **perfil específico de la app Claude**, así los botones solo cambian de función cuando Claude
-Desktop está en primer plano y en el resto de apps el mouse sigue igual.
+**English** · [Español](mx-master-4.es.md)
 
-> Los nombres de menús pueden variar un poco según la versión de Logi Options+.
+Everything lives in an **app-specific profile for Claude**, so the buttons only change while Claude Desktop is in
+the foreground; everywhere else the mouse behaves as usual.
 
-## 0. Antes de empezar
+> Menu names may differ slightly between Logi Options+ versions.
 
-1. Instala el plugin (`ClaudeCode_0.1.0.lplug4`, doble clic) — ver el [README](../README.md#instalación).
-2. **macOS:** Ajustes del Sistema → Privacidad y seguridad → **Accesibilidad** → activa *LogiPluginService*
-   (y *Logi Options+* si aparece).
-3. Abre Claude Desktop y entra a la pestaña **Code**.
+## 0. Before you start
 
-## 1. Crear el perfil de Claude
+1. Install **Logi Options+** and pair the MX Master 4 (Bluetooth or Logi Bolt receiver).
+2. Install the plugin: double-click `ClaudeCode_0.1.0.lplug4`. The Logi Plugin Service installer opens; accept it.
+   If Windows or macOS warns that the file came from the internet, confirm you want to open it.
+3. **macOS only:** System Settings → Privacy & Security → **Accessibility** → enable *LogiPluginService*
+   (and *Logi Options+* if listed). Not needed on Windows.
+4. Open Claude Desktop and go to the **Code** tab.
 
-1. Abre **Logi Options+** y selecciona el **MX Master 4**.
-2. Arriba, en el selector de aplicaciones (*Todas las aplicaciones*), pulsa **+ Agregar aplicación** y elige
-   **Claude**.
-3. Con *Claude* seleccionado, todo lo que configures abajo aplica solo a Claude.
+## 1. Create the Claude profile
 
-## 2. Botón háptico → Actions Ring
+1. Open **Logi Options+** and select the **MX Master 4**.
+2. At the top, in the app selector (*All applications*), click **+ Add application** and pick **Claude**.
+3. With *Claude* selected, everything below applies only to Claude.
 
-El botón háptico (el panel bajo el pulgar) abre el **Actions Ring**.
+## 2. Haptic button → Actions Ring
 
-![Vista previa del Actions Ring](actions-ring-preview.png)
+The haptic button (the thumb panel) opens the **Actions Ring**.
 
-En sentido horario desde arriba: Nueva sesión · Enviar ahora · Aprobar todo · Modelo · Detener · Modo Plan · Vista · Más.
+![Actions Ring preview](actions-ring-preview.png)
 
-### Opción A: importar el perfil del repo (experimental)
+Clockwise from the top: New session · Send now · Approve all · Model · Stop · Plan mode · View · More.
 
-1. En Options+, entra a la configuración del **Actions Ring** con el perfil *Claude* seleccionado.
-2. En el menú del perfil (los **⋯** junto al nombre del perfil) elige **Importar perfil** y selecciona
-   `profiles/ClaudeCode-ActionsRing.lp5`.
-3. Si no lo acepta o aparece vacío, usa la opción B.
+### Option A: import the profile (experimental)
 
-### Opción B: armarlo a mano (2 minutos)
+1. In Options+, open the **Actions Ring** settings with the *Claude* profile selected.
+2. In the profile menu (the **⋯** next to the profile name) choose **Import profile** and select
+   `ClaudeCode-ActionsRing-en.lp5` (or `-es.lp5` for Spanish).
+3. If it's rejected or shows up empty, use option B.
 
-En el Actions Ring del perfil *Claude*, arrastra las acciones del grupo **Claude Code** a cada burbuja:
+### Option B: build it by hand (2 minutes)
 
-| Burbuja | Acción (grupo del plugin) |
+In the *Claude* profile's Actions Ring, drag actions from the **Claude Code** group onto each bubble:
+
+| Bubble | Action (plugin group) |
 |---|---|
-| 1 | Nueva sesión *(Sesiones)* |
-| 2 | Enviar ahora *(Prompt)* |
-| 3 | Aprobar todo *(Permisos)* |
-| 4 | Carpeta **Modelo**: Modelo: Opus · Modelo: Sonnet · Modelo: Haiku · Cambiar modelo · Esfuerzo |
-| 5 | Detener *(Prompt)* |
-| 6 | Modo Plan *(Permisos)* |
-| 7 | Carpeta **Vista**: Panel de diff · Terminal · Navegador · Chat lateral · Cambiar vista · Cerrar panel · Atajos |
-| 8 | Carpeta **Más**: Enviar · Aceptar sugerencia · Modo Auto · Modo Manual · Menú de permisos · /compact · /context · /code-review |
+| 1 (top) | New session *(Sessions)* |
+| 2 | Send now *(Prompt)* |
+| 3 | Approve all *(Permissions)* |
+| 4 | **Model** folder: Model: Opus · Model: Sonnet · Model: Haiku · Switch model · Effort |
+| 5 | Stop *(Prompt)* |
+| 6 | Plan mode *(Permissions)* |
+| 7 | **View** folder: Diff pane · Terminal · Browser · Side chat · Cycle view · Close pane · Shortcuts |
+| 8 | **More** folder: Send · Accept suggestion · Auto mode · Manual mode · Permission menu · /compact · /context · /code-review |
 
-Las carpetas se crean con la acción **Carpeta** (navegación) del propio Actions Ring.
+Folders are created with the Actions Ring's own **Folder** (navigation) action.
 
-Cuando lo tengas como te gusta, puedes **Exportar perfil** y reemplazar `profiles/ClaudeCode-ActionsRing.lp5` en
-el repo con tu exportación.
+Once it looks right, you can **Export profile** and replace `profiles/ClaudeCode-ActionsRing-en.lp5` in the repo
+with your export.
 
-### Vibración háptica
+### Haptic feedback
 
-En Options+ → MX Master 4 → **Respuesta háptica**, deja activada la vibración. Cada acción del plugin usa una
-forma de onda distinta:
+In Options+ → MX Master 4 → **Haptic feedback**, keep it enabled. Each plugin action uses its own waveform:
 
-| Evento | Forma de onda | Cuándo |
+| Event | Waveform | When |
 |---|---|---|
-| Mensaje enviado | `completed` | Enviar, Enviar ahora, /compact… |
-| Aprobado | `happy_alert` | Aprobar todo, Modo Auto |
-| Detenido | `sharp_collision` | Detener |
-| Modelo | `damp_collision` | Cambiar modelo / esfuerzo |
-| Nueva sesión | `damp_state_change` | Nueva sesión |
-| Navegación | `subtle_collision` | Sesión siguiente / anterior |
-| Acción | `sharp_state_change` | Resto de acciones |
-| Error | `angry_alert` | La acción falló (p. ej. falta el permiso de Accesibilidad) |
+| Message sent | `completed` | Send, Send now, /compact… |
+| Approved | `happy_alert` | Approve all, Auto mode |
+| Stopped | `sharp_collision` | Stop |
+| Model | `damp_collision` | Switch model / effort |
+| New session | `damp_state_change` | New session |
+| Navigation | `subtle_collision` | Next / previous session |
+| Action | `sharp_state_change` | Everything else |
+| Error | `angry_alert` | The action failed (e.g. missing Accessibility permission) |
 
-Para cambiarlas, edita `haptics` en `shared/actions.json` y ejecuta `node scripts/generate.mjs`.
+To change them, edit `haptics` in `shared/actions.json` and run `node scripts/generate.mjs`.
 
-## 3. Botón de gestos
+## 3. Gesture button
 
-Con el perfil *Claude* seleccionado, haz clic en el **botón de gestos** (el del pulgar, delante del panel háptico)
-y elige **Gestos** / **Gestos personalizados**. Para cada dirección asigna **Pulsación de tecla** con:
+With the *Claude* profile selected, click the **gesture button** (the thumb button in front of the haptic panel) and
+choose **Gestures** / **Custom gestures**. For each direction assign a **Keystroke**:
 
-| Gesto | Acción | macOS | Windows |
+| Gesture | Action | macOS | Windows |
 |---|---|---|---|
-| Clic | Enviar | `Return` | `Enter` |
-| Mantener + ↑ | Nueva sesión | `⌘ N` | `Ctrl N` |
-| Mantener + ↓ | Detener | `Esc` | `Esc` |
-| Mantener + ← | Sesión anterior | `⌘ ⇧ [` | `Ctrl Shift [` |
-| Mantener + → | Sesión siguiente | `⌘ ⇧ ]` | `Ctrl Shift ]` |
+| Click | Send | `Return` | `Enter` |
+| Hold + ↑ | New session | `⌘ N` | `Ctrl N` |
+| Hold + ↓ | Stop | `Esc` | `Esc` |
+| Hold + ← | Previous session | `⌘ ⇧ [` | `Ctrl Shift [` |
+| Hold + → | Next session | `⌘ ⇧ ]` | `Ctrl Shift ]` |
 
-Si tu versión de Options+ permite asignar **acciones de plugin** a los gestos, puedes poner *Enviar ahora* en el
-clic y *Aprobar todo* en algún gesto en lugar de las pulsaciones de tecla.
+If your Options+ version lets you assign **plugin actions** to gestures, you can put *Send now* on click and
+*Approve all* on a gesture instead of keystrokes.
 
-Alternativa sin plugin: Options+ puede asignar a un gesto la acción de **abrir/ejecutar** un programa; apunta a
-`node mcp-server/src/cli.js run <acción>` (p. ej. `run approve-all`) mediante un script `.command` (macOS) o `.bat`
-(Windows).
+## 4. Thumb wheel (optional)
 
-## 4. Rueda del pulgar (opcional)
+In the *Claude* profile, the horizontal wheel can keep its normal scrolling (handy in the diff pane). If you prefer,
+set it to keystrokes to switch sessions: left `Ctrl Shift Tab`, right `Ctrl Tab`.
 
-En el perfil *Claude*, la rueda horizontal puede quedarse con su desplazamiento normal (útil en el panel de diff).
-Si prefieres, configúrala con pulsaciones de tecla para cambiar de sesión: izquierda `Ctrl Shift Tab`,
-derecha `Ctrl Tab`.
+## 5. Match your menu order
 
-## Problemas comunes
+In Claude Desktop, open the permission menu (`Ctrl+Shift+M` / `⌘⇧M`) and the model menu (`Ctrl+Shift+I` / `⌘⇧I`)
+and count where each option is. If it doesn't match 1 = Manual, 2 = Accept edits, 3 = Plan, 4 = Auto and
+1 = Opus, 2 = Sonnet, 3 = Haiku, create the config file:
 
-| Síntoma | Solución |
+- **Windows:** `%USERPROFILE%\.claude-mx\config.json` (e.g. `C:\Users\YourName\.claude-mx\config.json`)
+- **macOS:** `~/.claude-mx/config.json`
+
+```json
+{
+  "permissionMenu": { "manual": 1, "acceptEdits": 2, "plan": 3, "auto": 4 },
+  "models": [
+    { "label": "Opus",   "menuIndex": 1 },
+    { "label": "Sonnet", "menuIndex": 2 },
+    { "label": "Haiku",  "menuIndex": 3 }
+  ]
+}
+```
+
+## Troubleshooting
+
+| Symptom | Fix |
 |---|---|
-| La acción vibra con el patrón de error y no pasa nada (macOS) | Falta el permiso de Accesibilidad para LogiPluginService |
-| "Aprobar todo" o "Modelo: X" eligen la opción equivocada | Ajusta `permissionMenu` / `models` en `~/.claude-mx/config.json` según el orden real de tus menús |
-| El menú se abre pero no se elige nada | Sube `timing.menuOpenMs` (p. ej. a 400) |
-| Atajos con `[`, `]`, `` ` `` no responden (Windows) | Cambia `windows.keyMapping` a `"us"` |
-| Las acciones del plugin no aparecen | Reinicia Logi Options+; comprueba que el perfil seleccionado sea *Claude* |
+| The action vibrates with the error pattern and nothing happens (macOS) | Grant Accessibility permission to LogiPluginService |
+| "Approve all" or "Model: X" picks the wrong option | Adjust `permissionMenu` / `models` in `config.json` to your actual menu order |
+| The menu opens but nothing gets picked | Raise `timing.menuOpenMs` (e.g. to 400) |
+| Shortcuts with `[`, `]`, `` ` `` don't respond (Windows) | Set `windows.keyMapping` to `"us"` |
+| Plugin actions don't show up | Restart Logi Options+; make sure the *Claude* profile is selected |
+| Labels show in the wrong language | Set `"language": "en"` or `"es"` in `config.json` and restart Logi Options+ |

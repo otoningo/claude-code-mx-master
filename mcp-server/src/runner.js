@@ -1,5 +1,5 @@
 // Punto común para ejecutar acciones: resuelve pasos y elige el emisor según el sistema.
-import { findAction, loadCatalog, loadConfig, resolveSteps, displayNameFor } from "./catalog.js";
+import { findAction, loadCatalog, loadConfig, resolveSteps, displayNameFor, localize } from "./catalog.js";
 import { sendMac, buildAppleScript } from "./senders/mac.js";
 import { sendWindows, buildWindowsPlan } from "./senders/windows.js";
 
@@ -34,10 +34,8 @@ export async function typePrompt(text, { submit = false, config = loadConfig() }
 }
 
 export function listActions({ catalog = loadCatalog(), config = loadConfig() } = {}) {
-  return catalog.actions.map((a) => ({
-    id: a.id,
-    name: displayNameFor(a, config),
-    group: catalog.groups[a.group] ?? a.group,
-    description: a.description,
-  }));
+  return catalog.actions.map((a) => {
+    const t = localize(a, config, catalog);
+    return { id: a.id, name: t.displayName, group: t.group, description: t.description };
+  });
 }

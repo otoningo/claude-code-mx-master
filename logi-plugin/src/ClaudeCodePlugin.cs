@@ -19,12 +19,14 @@ public class ClaudeCodePlugin : Plugin
     {
         // Registra los eventos hápticos definidos en shared/actions.json
         // (los mismos que declara package/events/DefaultEventSource.yaml).
+        var config = ConfigStore.Load();
         foreach (var haptic in ActionCatalog.Instance.Haptics)
         {
-            this.PluginEvents.AddEvent(haptic.Name, haptic.DisplayName, haptic.Description);
+            var (displayName, description) = Localizer.Haptic(haptic, config);
+            this.PluginEvents.AddEvent(haptic.Name, displayName, description);
         }
 
-        PluginLog.Info($"Claude Code plugin cargado: {ActionCatalog.Instance.Actions.Count} acciones, config en {ConfigStore.UserConfigPath}");
+        PluginLog.Info($"Claude Code plugin cargado: {ActionCatalog.Instance.Actions.Count} acciones, idioma {Localizer.Language(config)}, config en {ConfigStore.UserConfigPath}");
     }
 
     public override void Unload()

@@ -25,5 +25,5 @@ VERSION=$(sed -n 's/^version: *//p' logi-plugin/src/package/metadata/LoupedeckPa
 mkdir -p dist
 dotnet tool run logiplugintool -- pack logi-plugin/bin/Release "dist/ClaudeCode_${VERSION}.lplug4"
 dotnet tool run logiplugintool -- verify "dist/ClaudeCode_${VERSION}.lplug4"
-cp profiles/ClaudeCode-ActionsRing.lp5 dist/
+cp profiles/*.lp5 dist/
 echo "Listo: dist/ClaudeCode_${VERSION}.lplug4"

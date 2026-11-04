@@ -22,5 +22,5 @@ $version = ((Get-Content logi-plugin/src/package/metadata/LoupedeckPackage.yaml 
 New-Item -ItemType Directory -Force dist | Out-Null
 dotnet tool run logiplugintool -- pack logi-plugin/bin/Release "dist/ClaudeCode_$version.lplug4"
 dotnet tool run logiplugintool -- verify "dist/ClaudeCode_$version.lplug4"
-Copy-Item profiles/ClaudeCode-ActionsRing.lp5 dist/
+Copy-Item profiles/*.lp5 dist/
 Write-Host "Listo: dist\ClaudeCode_$version.lplug4"

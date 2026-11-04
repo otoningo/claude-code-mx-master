@@ -46,6 +46,19 @@ export function loadCatalog() {
   return readJson(path.join(sharedDir(), "actions.json"));
 }
 
+export function loadStrings(lang) {
+  if (lang !== "en") return null;
+  return readJson(path.join(sharedDir(), "i18n.en.json"));
+}
+
+/** "es" o "en". config.language: "auto" (por defecto) usa el idioma del sistema. */
+export function resolveLanguage(config, env = process.env) {
+  const configured = String(config?.language ?? "auto").toLowerCase();
+  if (configured === "es" || configured === "en") return configured;
+  const sys = env.LC_ALL || env.LC_MESSAGES || env.LANG || Intl.DateTimeFormat().resolvedOptions().locale || "";
+  return sys.toLowerCase().startsWith("es") ? "es" : "en";
+}
+
 export function loadConfig({ userFile = userConfigPath() } = {}) {
   const defaults = readJson(path.join(sharedDir(), "config.default.json"));
   if (userFile && fs.existsSync(userFile)) {
@@ -118,12 +131,21 @@ export function resolveSteps(action, config) {
   return out;
 }
 
-export function displayNameFor(action, config) {
+/** Textos de una acción en el idioma configurado. */
+export function localize(action, config, catalog) {
+  const strings = loadStrings(resolveLanguage(config));
+  const t = strings?.actions?.[action.id];
+  let displayName = t?.displayName ?? action.displayName;
   if (action.displayNameFrom) {
     const label = getPath(config, action.displayNameFrom);
-    if (label) return `Modelo: ${label}`;
+    if (label) displayName = `${strings?.modelPrefix ?? "Modelo"}: ${label}`;
   }
-  return action.displayName;
+  const group = strings?.groups?.[action.group] ?? catalog?.groups?.[action.group] ?? action.group;
+  return { displayName, description: t?.description ?? action.description, group };
+}
+
+export function displayNameFor(action, config) {
+  return localize(action, config).displayName;
 }
 
 export function findAction(catalog, id) {

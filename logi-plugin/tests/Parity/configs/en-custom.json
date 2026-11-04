@@ -1,0 +1,7 @@
+{
+  "language": "en",
+  "activateApp": false,
+  "timing": { "stepMs": 0 },
+  "permissionMenu": { "acceptEdits": 3 },
+  "models": [{ "label": "Fable", "menuIndex": 4 }, { "label": "Opus", "menuIndex": 1 }, { "label": "Sonnet", "menuIndex": 2 }]
+}

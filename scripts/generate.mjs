@@ -4,7 +4,7 @@
 //   - logi-plugin/src/package/actionsymbols/*.svg     (iconos del selector de acciones)
 //   - logi-plugin/src/package/icontemplates/*.ict     (iconos de las burbujas del Actions Ring)
 //   - logi-plugin/src/package/events/...yaml          (eventos hápticos del MX Master 4)
-//   - profiles/ClaudeCode-ActionsRing.lp5             (perfil del Actions Ring, experimental)
+//   - profiles/ClaudeCode-ActionsRing-{es,en}.lp5     (perfil del Actions Ring, experimental)
 // Uso: node scripts/generate.mjs          -> escribe los archivos
 //      node scripts/generate.mjs --check  -> falla si algo generado está desactualizado (CI)
 import crypto from "node:crypto";
@@ -22,6 +22,7 @@ const NAMESPACE = "Loupedeck.ClaudeCodePlugin";
 
 const catalog = JSON.parse(fs.readFileSync(path.join(root, "shared/actions.json"), "utf8"));
 const ring = JSON.parse(fs.readFileSync(path.join(root, "shared/ring-layout.json"), "utf8"));
+const en = JSON.parse(fs.readFileSync(path.join(root, "shared/i18n.en.json"), "utf8"));
 const byId = new Map(catalog.actions.map((a) => [a.id, a]));
 
 // "#RRGGBB" -> ARGB opaco (formato de color de los .ict)
@@ -86,12 +87,13 @@ for (const a of catalog.actions) {
   const src = [
     "# Generado por scripts/generate.mjs. No editar a mano.",
     "displayName: Claude Code",
-    "description: Vibraciones del MX Master 4 para las acciones de Claude Code Desktop",
+    "description: MX Master 4 haptic feedback for Claude Code Desktop actions",
     "events:",
   ];
   const map = ["# Generado por scripts/generate.mjs. No editar a mano.", "haptics:"];
   for (const [name, h] of Object.entries(catalog.haptics)) {
-    src.push(`    - name: ${name}`, `      displayName: ${JSON.stringify(h.displayName)}`, `      description: ${JSON.stringify(h.description)}`);
+    const t = en.haptics[name];
+    src.push(`    - name: ${name}`, `      displayName: ${JSON.stringify(t.displayName)}`, `      description: ${JSON.stringify(t.description)}`);
     map.push(`    ${name}:`, `        DEFAULT: ${h.waveform}`);
   }
   put("logi-plugin/src/package/events/DefaultEventSource.yaml", src.join("\n") + "\n");
@@ -119,9 +121,14 @@ const page = (name, displayName, controls) => ({
   controls,
 });
 
-function buildProfile() {
+function buildProfile(lang) {
+  const L = (es, eng) => (lang === "en" ? eng : es);
+  const actionText = (id) => ({
+    displayName: L(byId.get(id).displayName, en.actions[id].displayName),
+    description: L(byId.get(id).description, en.actions[id].description),
+  });
   if (ring.slots.length > 8) throw new Error("El Actions Ring admite como máximo 8 burbujas");
-  const profileId = guid("profile");
+  const profileId = guid(`profile:${lang}`);
   const folderPages = [];
   const profileActions = [];
   const actionIcons = {};
@@ -132,12 +139,13 @@ function buildProfile() {
     if (typeof slot === "string") {
       const name = actionName(slot);
       mainControls.push(control(i, name));
-      preview.push({ controlId: i, actionName: name, displayName: byId.get(slot).displayName, description: byId.get(slot).description, image: null });
+      preview.push({ controlId: i, actionName: name, ...actionText(slot), image: null });
       return;
     }
-    const folderId = guid(`folder:${slot.folder}`);
+    const folderName = L(slot.folder, slot.folderEn ?? slot.folder);
+    const folderId = guid(`folder:${lang}:${slot.folder}`);
     const folderAction = `$@Generic___@ProfileAction___${folderId}`;
-    if (slot.actions.length > 9) throw new Error(`La carpeta ${slot.folder} tiene más de 9 acciones`);
+    if (slot.actions.length > 9) throw new Error(`La carpeta ${folderName} tiene más de 9 acciones`);
     folderPages.push(page(folderId, "Folder", slot.actions.map((id, j) => control(j, actionName(id)))));
     profileActions.push({
       $type: "Loupedeck.Service.ApplicationProfileCommand, LoupedeckService",
@@ -149,7 +157,7 @@ function buildProfile() {
         parameters: { $type: "Loupedeck.StringDictionaryNoCase, PluginApi", folderName: folderId },
         count: 1,
       },
-      displayName: slot.folder,
+      displayName: folderName,
       description: "",
       groupName: "Folders",
       superGroupName: "@navigation",
@@ -159,9 +167,9 @@ function buildProfile() {
       adjustmentName: null,
       states: null,
     });
-    actionIcons[`ActionIcons/${folderAction}.ict`] = ict(iconSvg(slot.icon), `${slot.folder}.svg`);
+    actionIcons[`ActionIcons/${folderAction}.ict`] = ict(iconSvg(slot.icon), `${folderName}.svg`);
     mainControls.push(control(i, folderAction));
-    preview.push({ controlId: i, actionName: folderAction, displayName: slot.folder, description: "", image: null });
+    preview.push({ controlId: i, actionName: folderAction, displayName: folderName, description: "", image: null });
   });
   for (let i = ring.slots.length; i < 8; i++) mainControls.push(control(i, null));
 
@@ -169,8 +177,8 @@ function buildProfile() {
     $type: "Loupedeck.Service.ApplicationProfile, LoupedeckService",
     name: profileId,
     profileFlags: "None",
-    displayName: ring.profileName,
-    description: "Atajos de Claude Code Desktop para el Actions Ring del MX Master 4",
+    displayName: L(ring.profileName, ring.profileNameEn ?? ring.profileName),
+    description: L("Atajos de Claude Code Desktop para el Actions Ring del MX Master 4", "Claude Code Desktop shortcuts for the MX Master 4 Actions Ring"),
     deviceType: "Loupedeck72",
     applicationName: `@_${PLUGIN_NAME.toLowerCase()}`,
     nativePluginName: PLUGIN_NAME,
@@ -236,7 +244,7 @@ function buildProfile() {
 
   const json = (o) => JSON.stringify(o, null, 4);
   const files = {
-    "metadata/LoupedeckPackage.yaml": `type: Profile5\nname: ${profileId}\ndisplayName: ${ring.profileName}\nversion: 1.0\n`,
+    "metadata/LoupedeckPackage.yaml": `type: Profile5\nname: ${profileId}\ndisplayName: ${L(ring.profileName, ring.profileNameEn ?? ring.profileName)}\nversion: 1.0\n`,
     "metadata/AdvancedInfo.json": json({ additionalPluginNames: [PLUGIN_NAME] }),
     "metadata/ProfilePreview.json": json({ buttonPages: preview, encoderPages: [null, null, null, null] }),
     "ApplicationInfo.json": json(applicationInfo),
@@ -302,10 +310,11 @@ function zip(files) {
   return Buffer.concat([...locals, centralBuf, end]);
 }
 
-put("profiles/ClaudeCode-ActionsRing.lp5", buildProfile());
+put("profiles/ClaudeCode-ActionsRing-es.lp5", buildProfile("es"));
+put("profiles/ClaudeCode-ActionsRing-en.lp5", buildProfile("en"));
 
 // ---------- Escribir / comprobar ----------
-const generatedDirs = ["logi-plugin/src/package/actionsymbols", "logi-plugin/src/package/icontemplates"];
+const generatedDirs = ["logi-plugin/src/package/actionsymbols", "logi-plugin/src/package/icontemplates", "profiles"];
 const stale = [];
 for (const [rel, content] of outputs) {
   const abs = path.join(root, rel);

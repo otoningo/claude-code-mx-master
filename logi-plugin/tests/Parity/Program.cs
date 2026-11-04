@@ -16,6 +16,8 @@ foreach (var action in ActionCatalog.Instance.Actions)
     result[action.Id] = new
     {
         name = StepResolver.DisplayName(action, config),
+        description = Localizer.Description(action, config),
+        group = Localizer.Group(action, config),
         appleScript = MacKeySender.BuildAppleScript(steps, config),
     };
 }

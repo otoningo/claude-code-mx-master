@@ -39,6 +39,7 @@
   <ItemGroup>
     <EmbeddedResource Include="../../shared/actions.json" LogicalName="ClaudeCode.actions.json" />
     <EmbeddedResource Include="../../shared/config.default.json" LogicalName="ClaudeCode.config.default.json" />
+    <EmbeddedResource Include="../../shared/i18n.en.json" LogicalName="ClaudeCode.i18n.en.json" WithCulture="false" />
     <None Include="package/**/*" CopyToOutputDirectory="Never" />
   </ItemGroup>
 
