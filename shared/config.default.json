@@ -2,6 +2,11 @@
   "$comment": "Copia este archivo a ~/.claude-mx/config.json (Windows: %USERPROFILE%\\.claude-mx\\config.json) y ajústalo. Los números de menú son la posición (1-9) de cada opción en los menús de Claude Desktop: ábrelos con Cmd/Ctrl+Shift+M (permisos) y Cmd/Ctrl+Shift+I (modelo) y cuenta de arriba hacia abajo.",
   "language": "auto",
   "activateApp": true,
+  "bridge": {
+    "port": 47823,
+    "holdSeconds": 20,
+    "autoInstallHooks": true
+  },
   "timing": {
     "stepMs": 60,
     "menuOpenMs": 250,
@@ -15,12 +20,23 @@
     "auto": 4
   },
   "models": [
-    {"label": "Opus", "menuIndex": 1},
-    {"label": "Sonnet", "menuIndex": 2},
-    {"label": "Haiku", "menuIndex": 3}
+    {
+      "label": "Opus",
+      "menuIndex": 1
+    },
+    {
+      "label": "Sonnet",
+      "menuIndex": 2
+    },
+    {
+      "label": "Haiku",
+      "menuIndex": 3
+    }
   ],
   "windows": {
-    "processNames": ["claude"],
+    "processNames": [
+      "claude"
+    ],
     "keyMapping": "layout"
   },
   "mac": {

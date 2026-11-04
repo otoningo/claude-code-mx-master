@@ -9,49 +9,41 @@
   "slots": [
     "new-session",
     "send-now",
+    "approve",
     "approve-all",
+    "stop",
+    "deny",
     {
-      "folder": "Modelo",
+      "folder": "Modelo y modo",
+      "folderEn": "Model & mode",
       "icon": "sparkles",
       "actions": [
         "model-1",
         "model-2",
         "model-3",
         "model-menu",
-        "effort-menu"
-      ],
-      "folderEn": "Model"
-    },
-    "stop",
-    "plan-mode",
-    {
-      "folder": "Vista",
-      "icon": "eye",
-      "actions": [
-        "toggle-diff",
-        "toggle-terminal",
-        "toggle-browser",
-        "side-chat",
-        "cycle-view",
-        "close-pane",
-        "show-shortcuts"
-      ],
-      "folderEn": "View"
+        "effort-menu",
+        "plan-mode",
+        "auto-mode",
+        "manual-mode",
+        "permission-menu"
+      ]
     },
     {
       "folder": "Más",
+      "folderEn": "More",
       "icon": "dots",
       "actions": [
         "send",
         "accept-suggestion",
-        "auto-mode",
-        "manual-mode",
-        "permission-menu",
+        "toggle-diff",
+        "toggle-terminal",
+        "toggle-browser",
+        "side-chat",
         "compact",
         "context",
         "code-review"
-      ],
-      "folderEn": "More"
+      ]
     }
   ],
   "profileNameEn": "Claude Code - MX Master 4"

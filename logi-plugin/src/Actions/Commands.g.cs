@@ -3,7 +3,7 @@
 // </auto-generated>
 namespace Loupedeck.ClaudeCodePlugin;
 
-/// <summary>Nueva sesión: Abre una sesión nueva de Claude Code (Cmd/Ctrl+N)</summary>
+/// <summary>Nueva sesión: Abre una sesión nueva con el enlace oficial claude://code/new (respaldo: Cmd/Ctrl+N)</summary>
 public sealed class NewSessionCommand : ClaudeCommandBase
 {
     public NewSessionCommand() : base("new-session") { }
@@ -39,7 +39,7 @@ public sealed class SendNowCommand : ClaudeCommandBase
     public SendNowCommand() : base("send-now") { }
 }
 
-/// <summary>Detener: Detiene la respuesta de Claude (Esc)</summary>
+/// <summary>Detener: Si hay un permiso pendiente lo rechaza y detiene a Claude; si no, detiene la respuesta (Esc)</summary>
 public sealed class StopCommand : ClaudeCommandBase
 {
     public StopCommand() : base("stop") { }
@@ -51,10 +51,22 @@ public sealed class AcceptSuggestionCommand : ClaudeCommandBase
     public AcceptSuggestionCommand() : base("accept-suggestion") { }
 }
 
-/// <summary>Aprobar todo: Cambia el modo de permisos a 'Accept edits': Claude aplica las ediciones sin pedir aprobación una por una</summary>
+/// <summary>Aprobar: Aprueba la solicitud de permiso pendiente (solo esa)</summary>
+public sealed class ApproveCommand : ClaudeCommandBase
+{
+    public ApproveCommand() : base("approve") { }
+}
+
+/// <summary>Aprobar todo: Aprueba la solicitud pendiente y pasa la sesión a 'Accept edits' (sin preguntar más por ediciones). Sin solicitud pendiente: cambia el modo desde el menú de permisos</summary>
 public sealed class ApproveAllCommand : ClaudeCommandBase
 {
     public ApproveAllCommand() : base("approve-all") { }
+}
+
+/// <summary>Rechazar: Rechaza la solicitud de permiso pendiente; Claude sigue trabajando con otra estrategia</summary>
+public sealed class DenyCommand : ClaudeCommandBase
+{
+    public DenyCommand() : base("deny") { }
 }
 
 /// <summary>Modo Auto: Cambia el modo de permisos a 'Auto'</summary>

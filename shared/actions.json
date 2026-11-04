@@ -1,5 +1,5 @@
 {
-  "$comment": "Catálogo único de acciones de Claude Code Desktop. Lo usan el plugin de Logi Options+ (C#), el servidor MCP (Node) y el generador del perfil del Actions Ring. Pasos: 'mod' = Cmd en macOS / Ctrl en Windows; 'ctrl' es Ctrl en ambos. Un paso puede ser un atajo ('mod+shift+i'), una tecla ('esc'), {\"text\": \"...\"} para escribir texto, {\"wait\": ms} para esperar, o un placeholder '${ruta.en.config}' que se resuelve con el número de opción del menú configurado.",
+  "$comment": "Catálogo único de acciones de Claude Code Desktop. Lo usan el plugin de Logi Options+ (C#), el servidor MCP (Node) y el generador del perfil del Actions Ring. 'direct' = interfaz oficial de la app (sin atajos): {type:'permission'} responde la solicitud de permiso pendiente a través de los hooks de Claude Code; {type:'deeplink'} abre un enlace claude://. 'steps' = respaldo con atajos de teclado cuando no hay interfaz directa o la directa no aplica. Pasos: 'mod' = Cmd en macOS / Ctrl en Windows; 'ctrl' es Ctrl en ambos. Un paso puede ser un atajo ('mod+shift+i'), una tecla ('esc'), {\"text\": \"...\"}, {\"wait\": ms} o '${ruta.en.config}'.",
   "version": 1,
   "groups": {
     "session": "Sesiones",
@@ -14,11 +14,17 @@
       "id": "new-session",
       "className": "NewSessionCommand",
       "displayName": "Nueva sesión",
-      "description": "Abre una sesión nueva de Claude Code (Cmd/Ctrl+N)",
+      "description": "Abre una sesión nueva con el enlace oficial claude://code/new (respaldo: Cmd/Ctrl+N)",
       "group": "session",
       "icon": "plus",
       "haptic": "claudeSession",
-      "steps": ["mod+n"]
+      "direct": {
+        "type": "deeplink",
+        "url": "claude://code/new"
+      },
+      "steps": [
+        "mod+n"
+      ]
     },
     {
       "id": "close-session",
@@ -28,7 +34,9 @@
       "group": "session",
       "icon": "x",
       "haptic": "claudeAction",
-      "steps": ["mod+w"]
+      "steps": [
+        "mod+w"
+      ]
     },
     {
       "id": "next-session",
@@ -38,7 +46,9 @@
       "group": "session",
       "icon": "arrow-right",
       "haptic": "claudeNavigate",
-      "steps": ["mod+shift+]"]
+      "steps": [
+        "mod+shift+]"
+      ]
     },
     {
       "id": "previous-session",
@@ -48,7 +58,9 @@
       "group": "session",
       "icon": "arrow-left",
       "haptic": "claudeNavigate",
-      "steps": ["mod+shift+["]
+      "steps": [
+        "mod+shift+["
+      ]
     },
     {
       "id": "send",
@@ -58,7 +70,9 @@
       "group": "prompt",
       "icon": "send",
       "haptic": "claudeSend",
-      "steps": ["enter"]
+      "steps": [
+        "enter"
+      ]
     },
     {
       "id": "send-now",
@@ -68,17 +82,29 @@
       "group": "prompt",
       "icon": "bolt",
       "haptic": "claudeSend",
-      "steps": ["esc", {"wait": "${timing.afterStopMs}"}, "enter"]
+      "steps": [
+        "esc",
+        {
+          "wait": "${timing.afterStopMs}"
+        },
+        "enter"
+      ]
     },
     {
       "id": "stop",
       "className": "StopCommand",
       "displayName": "Detener",
-      "description": "Detiene la respuesta de Claude (Esc)",
+      "description": "Si hay un permiso pendiente lo rechaza y detiene a Claude; si no, detiene la respuesta (Esc)",
       "group": "prompt",
       "icon": "stop",
       "haptic": "claudeStop",
-      "steps": ["esc"]
+      "direct": {
+        "type": "permission",
+        "decision": "stop"
+      },
+      "steps": [
+        "esc"
+      ]
     },
     {
       "id": "accept-suggestion",
@@ -88,17 +114,57 @@
       "group": "prompt",
       "icon": "check",
       "haptic": "claudeAction",
-      "steps": ["tab"]
+      "steps": [
+        "tab"
+      ]
+    },
+    {
+      "id": "approve",
+      "className": "ApproveCommand",
+      "displayName": "Aprobar",
+      "description": "Aprueba la solicitud de permiso pendiente (solo esa)",
+      "group": "permissions",
+      "icon": "check",
+      "haptic": "claudeApprove",
+      "direct": {
+        "type": "permission",
+        "decision": "approve"
+      },
+      "steps": []
     },
     {
       "id": "approve-all",
       "className": "ApproveAllCommand",
       "displayName": "Aprobar todo",
-      "description": "Cambia el modo de permisos a 'Accept edits': Claude aplica las ediciones sin pedir aprobación una por una",
+      "description": "Aprueba la solicitud pendiente y pasa la sesión a 'Accept edits' (sin preguntar más por ediciones). Sin solicitud pendiente: cambia el modo desde el menú de permisos",
       "group": "permissions",
       "icon": "check-all",
       "haptic": "claudeApprove",
-      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.acceptEdits}"]
+      "direct": {
+        "type": "permission",
+        "decision": "approve-all"
+      },
+      "steps": [
+        "mod+shift+m",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${permissionMenu.acceptEdits}"
+      ]
+    },
+    {
+      "id": "deny",
+      "className": "DenyCommand",
+      "displayName": "Rechazar",
+      "description": "Rechaza la solicitud de permiso pendiente; Claude sigue trabajando con otra estrategia",
+      "group": "permissions",
+      "icon": "x-circle",
+      "haptic": "claudeDeny",
+      "direct": {
+        "type": "permission",
+        "decision": "deny"
+      },
+      "steps": []
     },
     {
       "id": "auto-mode",
@@ -108,7 +174,13 @@
       "group": "permissions",
       "icon": "robot",
       "haptic": "claudeApprove",
-      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.auto}"]
+      "steps": [
+        "mod+shift+m",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${permissionMenu.auto}"
+      ]
     },
     {
       "id": "plan-mode",
@@ -118,7 +190,13 @@
       "group": "permissions",
       "icon": "clipboard",
       "haptic": "claudeAction",
-      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.plan}"]
+      "steps": [
+        "mod+shift+m",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${permissionMenu.plan}"
+      ]
     },
     {
       "id": "manual-mode",
@@ -128,7 +206,13 @@
       "group": "permissions",
       "icon": "shield",
       "haptic": "claudeAction",
-      "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.manual}"]
+      "steps": [
+        "mod+shift+m",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${permissionMenu.manual}"
+      ]
     },
     {
       "id": "permission-menu",
@@ -138,7 +222,9 @@
       "group": "permissions",
       "icon": "shield",
       "haptic": "claudeAction",
-      "steps": ["mod+shift+m"]
+      "steps": [
+        "mod+shift+m"
+      ]
     },
     {
       "id": "model-menu",
@@ -148,7 +234,9 @@
       "group": "model",
       "icon": "sparkles",
       "haptic": "claudeModel",
-      "steps": ["mod+shift+i"]
+      "steps": [
+        "mod+shift+i"
+      ]
     },
     {
       "id": "model-1",
@@ -159,7 +247,13 @@
       "group": "model",
       "icon": "sparkles",
       "haptic": "claudeModel",
-      "steps": ["mod+shift+i", {"wait": "${timing.menuOpenMs}"}, "${models.0.menuIndex}"]
+      "steps": [
+        "mod+shift+i",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${models.0.menuIndex}"
+      ]
     },
     {
       "id": "model-2",
@@ -170,7 +264,13 @@
       "group": "model",
       "icon": "sparkles",
       "haptic": "claudeModel",
-      "steps": ["mod+shift+i", {"wait": "${timing.menuOpenMs}"}, "${models.1.menuIndex}"]
+      "steps": [
+        "mod+shift+i",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${models.1.menuIndex}"
+      ]
     },
     {
       "id": "model-3",
@@ -181,7 +281,13 @@
       "group": "model",
       "icon": "sparkles",
       "haptic": "claudeModel",
-      "steps": ["mod+shift+i", {"wait": "${timing.menuOpenMs}"}, "${models.2.menuIndex}"]
+      "steps": [
+        "mod+shift+i",
+        {
+          "wait": "${timing.menuOpenMs}"
+        },
+        "${models.2.menuIndex}"
+      ]
     },
     {
       "id": "effort-menu",
@@ -191,7 +297,9 @@
       "group": "model",
       "icon": "gauge",
       "haptic": "claudeModel",
-      "steps": ["mod+shift+e"]
+      "steps": [
+        "mod+shift+e"
+      ]
     },
     {
       "id": "toggle-diff",
@@ -201,7 +309,9 @@
       "group": "view",
       "icon": "diff",
       "haptic": "claudeAction",
-      "steps": ["mod+shift+d"]
+      "steps": [
+        "mod+shift+d"
+      ]
     },
     {
       "id": "toggle-terminal",
@@ -211,7 +321,9 @@
       "group": "view",
       "icon": "terminal",
       "haptic": "claudeAction",
-      "steps": ["ctrl+`"]
+      "steps": [
+        "ctrl+`"
+      ]
     },
     {
       "id": "toggle-browser",
@@ -221,7 +333,9 @@
       "group": "view",
       "icon": "globe",
       "haptic": "claudeAction",
-      "steps": ["mod+shift+b"]
+      "steps": [
+        "mod+shift+b"
+      ]
     },
     {
       "id": "side-chat",
@@ -231,7 +345,9 @@
       "group": "view",
       "icon": "chat",
       "haptic": "claudeAction",
-      "steps": ["mod+;"]
+      "steps": [
+        "mod+;"
+      ]
     },
     {
       "id": "cycle-view",
@@ -241,7 +357,9 @@
       "group": "view",
       "icon": "eye",
       "haptic": "claudeAction",
-      "steps": ["ctrl+o"]
+      "steps": [
+        "ctrl+o"
+      ]
     },
     {
       "id": "close-pane",
@@ -251,7 +369,9 @@
       "group": "view",
       "icon": "panel-close",
       "haptic": "claudeAction",
-      "steps": ["mod+\\"]
+      "steps": [
+        "mod+\\"
+      ]
     },
     {
       "id": "show-shortcuts",
@@ -261,7 +381,9 @@
       "group": "view",
       "icon": "keyboard",
       "haptic": "claudeAction",
-      "steps": ["mod+/"]
+      "steps": [
+        "mod+/"
+      ]
     },
     {
       "id": "compact",
@@ -271,7 +393,15 @@
       "group": "commands",
       "icon": "compress",
       "haptic": "claudeSend",
-      "steps": [{"text": "/compact"}, {"wait": "${timing.afterTextMs}"}, "enter"]
+      "steps": [
+        {
+          "text": "/compact"
+        },
+        {
+          "wait": "${timing.afterTextMs}"
+        },
+        "enter"
+      ]
     },
     {
       "id": "context",
@@ -281,7 +411,15 @@
       "group": "commands",
       "icon": "gauge",
       "haptic": "claudeSend",
-      "steps": [{"text": "/context"}, {"wait": "${timing.afterTextMs}"}, "enter"]
+      "steps": [
+        {
+          "text": "/context"
+        },
+        {
+          "wait": "${timing.afterTextMs}"
+        },
+        "enter"
+      ]
     },
     {
       "id": "code-review",
@@ -291,17 +429,93 @@
       "group": "commands",
       "icon": "review",
       "haptic": "claudeSend",
-      "steps": [{"text": "/code-review"}, {"wait": "${timing.afterTextMs}"}, "enter"]
+      "steps": [
+        {
+          "text": "/code-review"
+        },
+        {
+          "wait": "${timing.afterTextMs}"
+        },
+        "enter"
+      ]
     }
   ],
   "haptics": {
-    "claudeAction": {"displayName": "Acción de Claude", "description": "Se ejecutó una acción de Claude Code", "waveform": "sharp_state_change"},
-    "claudeNavigate": {"displayName": "Navegación", "description": "Cambio de sesión", "waveform": "subtle_collision"},
-    "claudeSession": {"displayName": "Nueva sesión", "description": "Se abrió una sesión nueva", "waveform": "damp_state_change"},
-    "claudeSend": {"displayName": "Mensaje enviado", "description": "Se envió un mensaje o comando", "waveform": "completed"},
-    "claudeStop": {"displayName": "Detenido", "description": "Se detuvo la respuesta de Claude", "waveform": "sharp_collision"},
-    "claudeApprove": {"displayName": "Aprobado", "description": "Se activó la aprobación automática", "waveform": "happy_alert"},
-    "claudeModel": {"displayName": "Modelo", "description": "Cambio de modelo o esfuerzo", "waveform": "damp_collision"},
-    "claudeError": {"displayName": "Error", "description": "Una acción falló (p. ej. falta permiso de accesibilidad)", "waveform": "angry_alert"}
+    "claudeAction": {
+      "displayName": "Acción de Claude",
+      "description": "Se ejecutó una acción de Claude Code",
+      "waveform": "sharp_state_change"
+    },
+    "claudeNavigate": {
+      "displayName": "Navegación",
+      "description": "Cambio de sesión",
+      "waveform": "subtle_collision"
+    },
+    "claudeSession": {
+      "displayName": "Nueva sesión",
+      "description": "Se abrió una sesión nueva",
+      "waveform": "damp_state_change"
+    },
+    "claudeSend": {
+      "displayName": "Mensaje enviado",
+      "description": "Se envió un mensaje o comando",
+      "waveform": "wave"
+    },
+    "claudeStop": {
+      "displayName": "Detenido",
+      "description": "Se detuvo la respuesta de Claude",
+      "waveform": "sharp_collision"
+    },
+    "claudeApprove": {
+      "displayName": "Aprobado",
+      "description": "Se activó la aprobación automática",
+      "waveform": "happy_alert"
+    },
+    "claudeModel": {
+      "displayName": "Modelo",
+      "description": "Cambio de modelo o esfuerzo",
+      "waveform": "damp_collision"
+    },
+    "claudeDeny": {
+      "displayName": "Rechazado",
+      "description": "Se rechazó una solicitud de permiso",
+      "waveform": "damp_collision"
+    },
+    "claudeNeedsApproval": {
+      "displayName": "Pide permiso",
+      "description": "Claude espera tu aprobación",
+      "waveform": "knock"
+    },
+    "claudeNeedsInput": {
+      "displayName": "Te espera",
+      "description": "Claude está esperando tu respuesta",
+      "waveform": "ringing"
+    },
+    "claudeFinished": {
+      "displayName": "Terminó",
+      "description": "Claude terminó su turno",
+      "waveform": "completed"
+    },
+    "claudeNothingPending": {
+      "displayName": "Nada pendiente",
+      "description": "No había ninguna solicitud de permiso pendiente",
+      "waveform": "subtle_collision"
+    },
+    "claudeError": {
+      "displayName": "Error",
+      "description": "Una acción falló (p. ej. falta permiso de accesibilidad)",
+      "waveform": "angry_alert"
+    }
+  },
+  "hookEvents": {
+    "$comment": "Eventos de Claude Code que el plugin recibe por hooks HTTP y la vibración que producen. \"Notification:<tipo>\" filtra por notification_type. PermissionRequest además queda en espera hasta que respondas con el mouse.",
+    "PermissionRequest": "claudeNeedsApproval",
+    "Notification:idle_prompt": "claudeNeedsInput",
+    "Notification:agent_needs_input": "claudeNeedsInput",
+    "Notification:elicitation_dialog": "claudeNeedsInput",
+    "Notification:permission_prompt": "claudeNeedsApproval",
+    "Stop": "claudeFinished",
+    "StopFailure": "claudeError",
+    "PostModelSwitch": "claudeModel"
   }
 }

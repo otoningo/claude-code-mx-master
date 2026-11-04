@@ -10,43 +10,179 @@
     "commands": "Commands"
   },
   "actions": {
-    "new-session": {"displayName": "New session", "description": "Start a new Claude Code session (Cmd/Ctrl+N)"},
-    "close-session": {"displayName": "Close session", "description": "Close the current session (Cmd/Ctrl+W)"},
-    "next-session": {"displayName": "Next session", "description": "Go to the next session (Cmd/Ctrl+Shift+])"},
-    "previous-session": {"displayName": "Previous session", "description": "Go to the previous session (Cmd/Ctrl+Shift+[)"},
-    "send": {"displayName": "Send", "description": "Send the typed message (Enter). If Claude is working, it is delivered when the current action finishes."},
-    "send-now": {"displayName": "Send now", "description": "Stop the current response (Esc) and send what you typed right away (Enter)"},
-    "stop": {"displayName": "Stop", "description": "Stop Claude's response (Esc)"},
-    "accept-suggestion": {"displayName": "Accept suggestion", "description": "Accept the suggested prompt when the box is empty (Tab)"},
-    "approve-all": {"displayName": "Approve all", "description": "Switch the permission mode to 'Accept edits': Claude applies edits without asking one by one"},
-    "auto-mode": {"displayName": "Auto mode", "description": "Switch the permission mode to 'Auto'"},
-    "plan-mode": {"displayName": "Plan mode", "description": "Switch the permission mode to 'Plan': Claude researches and proposes a plan without editing code"},
-    "manual-mode": {"displayName": "Manual mode", "description": "Go back to the 'Manual' permission mode (asks before every change)"},
-    "permission-menu": {"displayName": "Permission menu", "description": "Open the permission mode menu (Cmd/Ctrl+Shift+M)"},
-    "model-menu": {"displayName": "Switch model", "description": "Open the model menu (Cmd/Ctrl+Shift+I); pick with 1-9"},
-    "model-1": {"displayName": "Model 1", "description": "Select the first configured model (Opus by default)"},
-    "model-2": {"displayName": "Model 2", "description": "Select the second configured model (Sonnet by default)"},
-    "model-3": {"displayName": "Model 3", "description": "Select the third configured model (Haiku by default)"},
-    "effort-menu": {"displayName": "Effort", "description": "Open the effort/reasoning menu (Cmd/Ctrl+Shift+E)"},
-    "toggle-diff": {"displayName": "Diff pane", "description": "Show/hide the diff pane (Cmd/Ctrl+Shift+D)"},
-    "toggle-terminal": {"displayName": "Terminal", "description": "Show/hide the terminal pane (Ctrl+`)"},
-    "toggle-browser": {"displayName": "Browser", "description": "Show/hide the browser pane (Cmd/Ctrl+Shift+B)"},
-    "side-chat": {"displayName": "Side chat", "description": "Open the side chat (Cmd/Ctrl+;)"},
-    "cycle-view": {"displayName": "Cycle view", "description": "Cycle through view modes (Ctrl+O)"},
-    "close-pane": {"displayName": "Close pane", "description": "Close the focused pane (Cmd/Ctrl+\\)"},
-    "show-shortcuts": {"displayName": "Shortcuts", "description": "Show Claude Desktop keyboard shortcuts (Cmd/Ctrl+/)"},
-    "compact": {"displayName": "/compact", "description": "Type and send /compact to summarize the context (use with an empty prompt box)"},
-    "context": {"displayName": "/context", "description": "Type and send /context to see context usage (use with an empty prompt box)"},
-    "code-review": {"displayName": "/code-review", "description": "Type and send /code-review to review the current diff (use with an empty prompt box)"}
+    "new-session": {
+      "displayName": "New session",
+      "description": "Start a new session with the official claude://code/new link (fallback: Cmd/Ctrl+N)"
+    },
+    "close-session": {
+      "displayName": "Close session",
+      "description": "Close the current session (Cmd/Ctrl+W)"
+    },
+    "next-session": {
+      "displayName": "Next session",
+      "description": "Go to the next session (Cmd/Ctrl+Shift+])"
+    },
+    "previous-session": {
+      "displayName": "Previous session",
+      "description": "Go to the previous session (Cmd/Ctrl+Shift+[)"
+    },
+    "send": {
+      "displayName": "Send",
+      "description": "Send the typed message (Enter). If Claude is working, it is delivered when the current action finishes."
+    },
+    "send-now": {
+      "displayName": "Send now",
+      "description": "Stop the current response (Esc) and send what you typed right away (Enter)"
+    },
+    "stop": {
+      "displayName": "Stop",
+      "description": "If a permission request is pending, deny it and stop Claude; otherwise stop the response (Esc)"
+    },
+    "accept-suggestion": {
+      "displayName": "Accept suggestion",
+      "description": "Accept the suggested prompt when the box is empty (Tab)"
+    },
+    "approve": {
+      "displayName": "Approve",
+      "description": "Approve the pending permission request (just that one)"
+    },
+    "approve-all": {
+      "displayName": "Approve all",
+      "description": "Approve the pending request and switch the session to 'Accept edits' (no more edit prompts). With nothing pending: switch the mode from the permission menu"
+    },
+    "deny": {
+      "displayName": "Deny",
+      "description": "Deny the pending permission request; Claude keeps working another way"
+    },
+    "auto-mode": {
+      "displayName": "Auto mode",
+      "description": "Switch the permission mode to 'Auto'"
+    },
+    "plan-mode": {
+      "displayName": "Plan mode",
+      "description": "Switch the permission mode to 'Plan': Claude researches and proposes a plan without editing code"
+    },
+    "manual-mode": {
+      "displayName": "Manual mode",
+      "description": "Go back to the 'Manual' permission mode (asks before every change)"
+    },
+    "permission-menu": {
+      "displayName": "Permission menu",
+      "description": "Open the permission mode menu (Cmd/Ctrl+Shift+M)"
+    },
+    "model-menu": {
+      "displayName": "Switch model",
+      "description": "Open the model menu (Cmd/Ctrl+Shift+I); pick with 1-9"
+    },
+    "model-1": {
+      "displayName": "Model 1",
+      "description": "Select the first configured model (Opus by default)"
+    },
+    "model-2": {
+      "displayName": "Model 2",
+      "description": "Select the second configured model (Sonnet by default)"
+    },
+    "model-3": {
+      "displayName": "Model 3",
+      "description": "Select the third configured model (Haiku by default)"
+    },
+    "effort-menu": {
+      "displayName": "Effort",
+      "description": "Open the effort/reasoning menu (Cmd/Ctrl+Shift+E)"
+    },
+    "toggle-diff": {
+      "displayName": "Diff pane",
+      "description": "Show/hide the diff pane (Cmd/Ctrl+Shift+D)"
+    },
+    "toggle-terminal": {
+      "displayName": "Terminal",
+      "description": "Show/hide the terminal pane (Ctrl+`)"
+    },
+    "toggle-browser": {
+      "displayName": "Browser",
+      "description": "Show/hide the browser pane (Cmd/Ctrl+Shift+B)"
+    },
+    "side-chat": {
+      "displayName": "Side chat",
+      "description": "Open the side chat (Cmd/Ctrl+;)"
+    },
+    "cycle-view": {
+      "displayName": "Cycle view",
+      "description": "Cycle through view modes (Ctrl+O)"
+    },
+    "close-pane": {
+      "displayName": "Close pane",
+      "description": "Close the focused pane (Cmd/Ctrl+\\)"
+    },
+    "show-shortcuts": {
+      "displayName": "Shortcuts",
+      "description": "Show Claude Desktop keyboard shortcuts (Cmd/Ctrl+/)"
+    },
+    "compact": {
+      "displayName": "/compact",
+      "description": "Type and send /compact to summarize the context (use with an empty prompt box)"
+    },
+    "context": {
+      "displayName": "/context",
+      "description": "Type and send /context to see context usage (use with an empty prompt box)"
+    },
+    "code-review": {
+      "displayName": "/code-review",
+      "description": "Type and send /code-review to review the current diff (use with an empty prompt box)"
+    }
   },
   "haptics": {
-    "claudeAction": {"displayName": "Claude action", "description": "A Claude Code action ran"},
-    "claudeNavigate": {"displayName": "Navigation", "description": "Switched session"},
-    "claudeSession": {"displayName": "New session", "description": "A new session was opened"},
-    "claudeSend": {"displayName": "Message sent", "description": "A message or command was sent"},
-    "claudeStop": {"displayName": "Stopped", "description": "Claude's response was stopped"},
-    "claudeApprove": {"displayName": "Approved", "description": "Automatic approval was turned on"},
-    "claudeModel": {"displayName": "Model", "description": "Model or effort changed"},
-    "claudeError": {"displayName": "Error", "description": "An action failed (e.g. missing Accessibility permission)"}
+    "claudeAction": {
+      "displayName": "Claude action",
+      "description": "A Claude Code action ran"
+    },
+    "claudeNavigate": {
+      "displayName": "Navigation",
+      "description": "Switched session"
+    },
+    "claudeSession": {
+      "displayName": "New session",
+      "description": "A new session was opened"
+    },
+    "claudeSend": {
+      "displayName": "Message sent",
+      "description": "A message or command was sent"
+    },
+    "claudeStop": {
+      "displayName": "Stopped",
+      "description": "Claude's response was stopped"
+    },
+    "claudeApprove": {
+      "displayName": "Approved",
+      "description": "Automatic approval was turned on"
+    },
+    "claudeModel": {
+      "displayName": "Model",
+      "description": "Model or effort changed"
+    },
+    "claudeDeny": {
+      "displayName": "Denied",
+      "description": "A permission request was denied"
+    },
+    "claudeNeedsApproval": {
+      "displayName": "Needs approval",
+      "description": "Claude is waiting for your approval"
+    },
+    "claudeNeedsInput": {
+      "displayName": "Waiting for you",
+      "description": "Claude is waiting for your answer"
+    },
+    "claudeFinished": {
+      "displayName": "Finished",
+      "description": "Claude finished its turn"
+    },
+    "claudeNothingPending": {
+      "displayName": "Nothing pending",
+      "description": "There was no pending permission request"
+    },
+    "claudeError": {
+      "displayName": "Error",
+      "description": "An action failed (e.g. missing Accessibility permission)"
+    }
   }
 }

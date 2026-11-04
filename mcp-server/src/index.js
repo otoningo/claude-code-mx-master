@@ -5,7 +5,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { loadCatalog, loadConfig, resolveSteps, findAction } from "./catalog.js";
-import { listActions, runAction, sendSteps, typePrompt } from "./runner.js";
+import { listActions, runAction, sendSteps, typePrompt, isDryRun, defaultBridge } from "./runner.js";
 
 const catalog = loadCatalog();
 const actionIds = catalog.actions.map((a) => a.id);
@@ -43,8 +43,9 @@ server.registerTool(
   {
     title: "Ejecutar acción",
     description:
-      "Ejecuta una acción en Claude Code Desktop enviando sus atajos de teclado (trae la app al frente). " +
-      "Ejemplos: new-session, send-now, approve-all, plan-mode, model-menu, stop, toggle-diff.",
+      "Ejecuta una acción en Claude Code Desktop. Usa la interfaz directa cuando existe (approve/approve-all/deny/stop " +
+      "responden la solicitud de permiso pendiente a través del plugin; new-session abre claude://code/new) y si no, " +
+      "atajos de teclado. Ejemplos: new-session, approve, approve-all, deny, stop, send-now, plan-mode, model-menu.",
     inputSchema: { action: z.enum(actionIds).describe("Id de la acción (ver list_actions)") },
   },
   async ({ action }) => guard(() => runAction(action, { catalog, config: loadConfig() })),
@@ -54,21 +55,54 @@ server.registerTool(
   "new_session",
   {
     title: "Nueva sesión",
-    description: "Abre una sesión nueva en Claude Code Desktop y, opcionalmente, escribe (y envía) un prompt inicial.",
+    description:
+      "Abre una sesión nueva en Claude Code Desktop con el enlace oficial claude://code/new. Si das un prompt, " +
+      "Desktop lo deja escrito en la caja (nunca lo envía solo); con submit=true se envía con Enter.",
     inputSchema: {
-      prompt: z.string().optional().describe("Texto a escribir en la sesión nueva"),
+      prompt: z.string().optional().describe("Texto para la caja de prompt de la sesión nueva"),
       submit: z.boolean().default(false).describe("Enviar el prompt con Enter"),
     },
   },
   async ({ prompt, submit }) =>
     guard(async () => {
       const config = loadConfig();
-      const steps = resolveSteps(findAction(catalog, "new-session"), config);
-      if (prompt) {
-        steps.push({ type: "wait", ms: 600 }, { type: "text", text: prompt });
-        if (submit) steps.push({ type: "wait", ms: config.timing?.afterTextMs ?? 150 }, { type: "key", key: "enter", mods: [] });
+      const url = prompt ? `claude://code/new?q=${encodeURIComponent(prompt)}` : "claude://code/new";
+      if (isDryRun()) return { dryRun: true, url, submit };
+      await defaultBridge.open(url);
+      if (prompt && submit) {
+        await sendSteps([{ type: "wait", ms: 1200 }, { type: "key", key: "enter", mods: [] }], config);
       }
-      return sendSteps(steps, config);
+      return { opened: url, submitted: Boolean(prompt && submit) };
+    }),
+);
+
+server.registerTool(
+  "pending_permissions",
+  {
+    title: "Permisos pendientes",
+    description: "Lista las solicitudes de permiso de Claude Code que están esperando respuesta (vía el plugin de Logi Options+).",
+    inputSchema: {},
+  },
+  async () => guard(() => defaultBridge.pending(loadConfig())),
+);
+
+server.registerTool(
+  "decide_permission",
+  {
+    title: "Responder permiso",
+    description:
+      "Responde una solicitud de permiso pendiente de Claude Code: approve (solo esa), approve-all (esa y pasa a Accept edits), " +
+      "deny (Claude sigue con otra estrategia) o stop (rechaza y detiene a Claude). Sin id responde la más antigua.",
+    inputSchema: {
+      decision: z.enum(["approve", "approve-all", "deny", "stop"]),
+      id: z.string().optional().describe("Id de pending_permissions; por defecto la más antigua"),
+    },
+  },
+  async ({ decision, id }) =>
+    guard(async () => {
+      const res = await defaultBridge.decide(loadConfig(), decision, id);
+      if (!res.ok) throw new Error("No había ninguna solicitud de permiso pendiente con ese id.");
+      return { decided: decision };
     }),
 );
 
@@ -82,9 +116,11 @@ server.registerTool(
     inputSchema: { mode: z.enum(["manual", "acceptEdits", "plan", "auto"]) },
   },
   async ({ mode }) =>
-    guard(() => {
+    guard(async () => {
+      // Only the mode (menu); to also approve a pending request use decide_permission.
       const ids = { manual: "manual-mode", acceptEdits: "approve-all", plan: "plan-mode", auto: "auto-mode" };
-      return runAction(ids[mode], { catalog, config: loadConfig() });
+      const config = loadConfig();
+      return sendSteps(resolveSteps(findAction(catalog, ids[mode]), config), config);
     }),
 );
 

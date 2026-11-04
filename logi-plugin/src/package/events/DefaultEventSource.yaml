@@ -23,6 +23,21 @@ events:
     - name: claudeModel
       displayName: "Model"
       description: "Model or effort changed"
+    - name: claudeDeny
+      displayName: "Denied"
+      description: "A permission request was denied"
+    - name: claudeNeedsApproval
+      displayName: "Needs approval"
+      description: "Claude is waiting for your approval"
+    - name: claudeNeedsInput
+      displayName: "Waiting for you"
+      description: "Claude is waiting for your answer"
+    - name: claudeFinished
+      displayName: "Finished"
+      description: "Claude finished its turn"
+    - name: claudeNothingPending
+      displayName: "Nothing pending"
+      description: "There was no pending permission request"
     - name: claudeError
       displayName: "Error"
       description: "An action failed (e.g. missing Accessibility permission)"

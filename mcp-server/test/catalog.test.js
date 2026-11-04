@@ -7,10 +7,22 @@ import { buildWindowsPlan } from "../src/senders/windows.js";
 const catalog = loadCatalog();
 const config = { ...loadConfig({ userFile: null }), language: "es" };
 
-test("cada acción resuelve sus pasos sin errores", () => {
+test("cada acción resuelve sus pasos; solo las directas pueden no tener atajo", () => {
   for (const action of catalog.actions) {
     const steps = resolveSteps(action, config);
-    assert.ok(steps.length > 0, action.id);
+    assert.ok(steps.length > 0 || action.direct, action.id);
+  }
+});
+
+test("las acciones directas usan interfaces oficiales", () => {
+  const direct = Object.fromEntries(catalog.actions.filter((a) => a.direct).map((a) => [a.id, a.direct]));
+  assert.deepEqual(direct["new-session"], { type: "deeplink", url: "claude://code/new" });
+  for (const [id, decision] of [["approve", "approve"], ["approve-all", "approve-all"], ["deny", "deny"], ["stop", "stop"]]) {
+    assert.deepEqual(direct[id], { type: "permission", decision }, id);
+  }
+  for (const [key, haptic] of Object.entries(catalog.hookEvents)) {
+    if (key.startsWith("$")) continue;
+    assert.ok(catalog.haptics[haptic], `${key} -> ${haptic}`);
   }
 });
 

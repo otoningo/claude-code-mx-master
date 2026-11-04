@@ -44,6 +44,17 @@ jobs:
             node scripts/parity.mjs parity.json "$cfg"
           done
 
+      - name: Puente directo con Claude Code (hooks HTTP) - plugin C# <-> cliente Node
+        run: |
+          STUB="$PWD/logi-plugin/stubs/PluginApi/out/"
+          dotnet build logi-plugin/tests/BridgeSmoke -c Release -p:PluginApiDir="$STUB" -p:LinkPlugin=false
+          W="$RUNNER_TEMP/bridge"
+          mkdir -p "$W"
+          dotnet run --project logi-plugin/tests/BridgeSmoke -c Release --no-build -- "$W" 47910 none 30 > "$W/bridge.log" 2>&1 &
+          timeout 30 bash -c "until grep -q READY '$W/bridge.log'; do sleep 0.5; done"
+          CLAUDE_MX_CONFIG="$W/config.json" node scripts/bridge-selftest.mjs
+          touch "$W/done"
+
       - name: Empaquetar y verificar .lplug4
         run: |
           VERSION=$(sed -n 's/^version: *//p' logi-plugin/src/package/metadata/LoupedeckPackage.yaml)

@@ -15,7 +15,12 @@ public sealed record ActionDefinition(
     string Group,
     string GroupDisplayName,
     string Haptic,
-    JsonArray Steps);
+    JsonObject Direct,
+    JsonArray Steps)
+{
+    // Kind of direct interface: "permission", "deeplink" or null (shortcuts only).
+    public string DirectType => (string)this.Direct?["type"];
+}
 
 // Lee shared/actions.json (incrustado en la DLL) — el mismo catálogo que usa el servidor MCP.
 public sealed class ActionCatalog
@@ -28,12 +33,16 @@ public sealed class ActionCatalog
 
     public IReadOnlyList<HapticEvent> Haptics { get; }
 
+    // "PermissionRequest" / "Notification:idle_prompt" / ... -> haptic event.
+    public IReadOnlyDictionary<string, string> HookEvents { get; }
+
     private readonly Dictionary<string, ActionDefinition> _byId;
 
-    private ActionCatalog(List<ActionDefinition> actions, List<HapticEvent> haptics)
+    private ActionCatalog(List<ActionDefinition> actions, List<HapticEvent> haptics, Dictionary<string, string> hookEvents)
     {
         this.Actions = actions;
         this.Haptics = haptics;
+        this.HookEvents = hookEvents;
         this._byId = actions.ToDictionary(a => a.Id, StringComparer.Ordinal);
     }
 
@@ -61,6 +70,7 @@ public sealed class ActionCatalog
                 group,
                 (string)groups[group] ?? group,
                 (string)a["haptic"],
+                a["direct"] as JsonObject,
                 a["steps"]!.AsArray()));
         }
 
@@ -71,7 +81,19 @@ public sealed class ActionCatalog
             haptics.Add(new HapticEvent(name, (string)h["displayName"], (string)h["description"], (string)h["waveform"]));
         }
 
-        return new ActionCatalog(actions, haptics);
+        var hookEvents = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (root["hookEvents"] is JsonObject events)
+        {
+            foreach (var (key, value) in events)
+            {
+                if (!key.StartsWith('$'))
+                {
+                    hookEvents[key] = (string)value;
+                }
+            }
+        }
+
+        return new ActionCatalog(actions, haptics, hookEvents);
     }
 
     internal static string ReadResource(string logicalName)

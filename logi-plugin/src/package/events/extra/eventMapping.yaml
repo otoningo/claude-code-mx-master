@@ -7,12 +7,22 @@ haptics:
     claudeSession:
         DEFAULT: damp_state_change
     claudeSend:
-        DEFAULT: completed
+        DEFAULT: wave
     claudeStop:
         DEFAULT: sharp_collision
     claudeApprove:
         DEFAULT: happy_alert
     claudeModel:
         DEFAULT: damp_collision
+    claudeDeny:
+        DEFAULT: damp_collision
+    claudeNeedsApproval:
+        DEFAULT: knock
+    claudeNeedsInput:
+        DEFAULT: ringing
+    claudeFinished:
+        DEFAULT: completed
+    claudeNothingPending:
+        DEFAULT: subtle_collision
     claudeError:
         DEFAULT: angry_alert

@@ -57,8 +57,13 @@ public abstract class PluginDynamicCommand
     protected virtual void RunCommand(string actionParameter) { }
     protected virtual string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize) => this.DisplayName;
     protected virtual bool OnLoad() => true;
+    protected virtual bool OnUnload() => true;
+    public int ImageChangedCount { get; private set; }
+    public void ActionImageChanged() => this.ImageChangedCount++;
 
     // Solo para pruebas con el stub.
+    public bool Load() => this.OnLoad();
+
     public void Run(string actionParameter = null) => this.RunCommand(actionParameter);
     public string GetName() => this.GetCommandDisplayName(null, PluginImageSize.None);
 }

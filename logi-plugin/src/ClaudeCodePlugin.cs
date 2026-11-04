@@ -1,5 +1,6 @@
 namespace Loupedeck.ClaudeCodePlugin;
 
+using Loupedeck.ClaudeCodePlugin.Bridge;
 using Loupedeck.ClaudeCodePlugin.Core;
 
 // Plugin de aplicación: sus acciones aparecen en el perfil de Claude (Claude Desktop)
@@ -27,11 +28,26 @@ public class ClaudeCodePlugin : Plugin
         }
 
         PluginLog.Info($"Claude Code plugin cargado: {ActionCatalog.Instance.Actions.Count} acciones, idioma {Localizer.Language(config)}, config en {ConfigStore.UserConfigPath}");
+
+        // Direct link with Claude Code: local HTTP server + hooks in ~/.claude/settings.json.
+        try
+        {
+            this._bridge = BridgeHost.Start(config, this.RaiseHaptic);
+            PluginLog.Info($"Bridge listening on 127.0.0.1:{this._bridge.Port}");
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Couldn't start the bridge with Claude Code; shortcut fallbacks still work");
+        }
     }
 
     public override void Unload()
     {
+        this._bridge?.Dispose();
+        this._bridge = null;
     }
+
+    private BridgeServer _bridge;
 
     internal void RaiseHaptic(string eventName)
     {
