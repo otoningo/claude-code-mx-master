@@ -5,8 +5,14 @@ using Loupedeck.ClaudeCodePlugin.Core;
 using Loupedeck.ClaudeCodePlugin.Platform;
 
 // Uso: dotnet run -- <config.json opcional>
-if (args.Length > 0) Environment.SetEnvironmentVariable("CLAUDE_MX_CONFIG", args[0]);
-else Environment.SetEnvironmentVariable("CLAUDE_MX_CONFIG", "/nonexistent/config.json");
+// The config is copied to a temp folder (the token is created there) and the bridge uses an ephemeral port
+// without installing hooks: the test never touches ~/.claude/settings.json.
+var testDir = Path.Combine(Path.GetTempPath(), "claude-mx-parity-" + Guid.NewGuid().ToString("N"));
+Directory.CreateDirectory(testDir);
+var testConfig = args.Length > 0 ? System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(args[0]))!.AsObject() : new System.Text.Json.Nodes.JsonObject();
+testConfig["bridge"] = new System.Text.Json.Nodes.JsonObject { ["port"] = 0, ["autoInstallHooks"] = false };
+File.WriteAllText(Path.Combine(testDir, "config.json"), testConfig.ToJsonString());
+Environment.SetEnvironmentVariable("CLAUDE_MX_CONFIG", Path.Combine(testDir, "config.json"));
 
 var config = ConfigStore.Load();
 var result = new SortedDictionary<string, object>();
@@ -31,7 +37,7 @@ if (commandTypes.Count != ActionCatalog.Instance.Actions.Count)
 // Ejecutar una acción fuera de macOS/Windows debe fallar con gracia y vibrar "claudeError".
 var plugin = new ClaudeCodePlugin();
 plugin.Load();
-var cmd = (ClaudeCommandBase)Activator.CreateInstance(commandTypes.First());
+var cmd = (ClaudeCommandBase)Activator.CreateInstance(commandTypes.First(t => t.Name == "SendCommand"));
 cmd.Plugin = plugin;
 cmd.Run();
 for (var i = 0; i < 50 && plugin.PluginEvents.Raised.Count == 0; i++) Thread.Sleep(20);

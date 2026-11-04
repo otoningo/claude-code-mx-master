@@ -87,9 +87,13 @@ public static class BridgeHost
         {
             using var p = Process.Start("/usr/bin/open", url);
         }
-        else
+        else if (OperatingSystem.IsWindows())
         {
             using var p = Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+        else
+        {
+            throw new PlatformNotSupportedException("Claude Desktop only exists for macOS and Windows.");
         }
     }
 }
