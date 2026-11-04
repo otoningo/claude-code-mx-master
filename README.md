@@ -75,9 +75,14 @@ Sigue **[docs/mx-master-4.md](docs/mx-master-4.md)**. Resumen:
 
 **Botón háptico → Actions Ring** (perfil de la app *Claude*):
 
+<img src="docs/actions-ring-preview.png" width="320" alt="Vista previa del Actions Ring">
+
+Los íconos siguen el estilo de las burbujas nativas del Actions Ring (fondo gris claro, trazo negro). Los colores se
+cambian en `iconColors` de `shared/ring-layout.json`.
+
 | Burbuja | Acción |
 |---|---|
-| 1 | Nueva sesión |
+| 1 (arriba) | Nueva sesión |
 | 2 | Enviar ahora |
 | 3 | Aprobar todo |
 | 4 | 📁 Modelo → Opus · Sonnet · Haiku · Menú de modelos · Esfuerzo |

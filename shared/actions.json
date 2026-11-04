@@ -116,7 +116,7 @@
       "displayName": "Modo Plan",
       "description": "Cambia el modo de permisos a 'Plan': Claude investiga y propone un plan sin editar código",
       "group": "permissions",
-      "icon": "list",
+      "icon": "clipboard",
       "haptic": "claudeAction",
       "steps": ["mod+shift+m", {"wait": "${timing.menuOpenMs}"}, "${permissionMenu.plan}"]
     },

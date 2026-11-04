@@ -19,12 +19,15 @@ const check = process.argv.includes("--check");
 
 const PLUGIN_NAME = "ClaudeCode";
 const NAMESPACE = "Loupedeck.ClaudeCodePlugin";
-const RING_BACKGROUND = 0xffd97757; // coral
-const WHITE = 0xffffffff;
 
 const catalog = JSON.parse(fs.readFileSync(path.join(root, "shared/actions.json"), "utf8"));
 const ring = JSON.parse(fs.readFileSync(path.join(root, "shared/ring-layout.json"), "utf8"));
 const byId = new Map(catalog.actions.map((a) => [a.id, a]));
+
+// "#RRGGBB" -> ARGB opaco (formato de color de los .ict)
+const argb = (hex) => (0xff000000 | parseInt(hex.replace("#", ""), 16)) >>> 0;
+const RING_BACKGROUND = argb(ring.iconColors?.background ?? "#D8D8D8");
+const ICON_COLOR = argb(ring.iconColors?.foreground ?? "#000000");
 
 const outputs = new Map(); // ruta relativa -> Buffer
 const put = (rel, content) => outputs.set(rel, Buffer.isBuffer(content) ? content : Buffer.from(content, "utf8"));
@@ -53,17 +56,17 @@ const put = (rel, content) => outputs.set(rel, Buffer.isBuffer(content) ? conten
 const ict = (svg, fileName) =>
   JSON.stringify(
     {
-      backgroundColor: RING_BACKGROUND >>> 0,
+      backgroundColor: RING_BACKGROUND,
       items: [
         {
           $type: "Loupedeck.Service.ActionIconImageItem, LoupedeckShared",
           image: Buffer.from(svg).toString("base64"),
           imageFileName: fileName,
-          imageColor: WHITE >>> 0,
+          imageColor: ICON_COLOR,
           imageRotation: "None",
           isVisible: true,
           itemType: "Image",
-          area: { x: 20, y: 20, width: 60, height: 60, isFullScreen: false },
+          area: { x: 25, y: 25, width: 50, height: 50, isFullScreen: false },
         },
       ],
     },

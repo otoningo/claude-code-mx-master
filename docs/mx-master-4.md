@@ -23,6 +23,10 @@ Desktop está en primer plano y en el resto de apps el mouse sigue igual.
 
 El botón háptico (el panel bajo el pulgar) abre el **Actions Ring**.
 
+![Vista previa del Actions Ring](actions-ring-preview.png)
+
+En sentido horario desde arriba: Nueva sesión · Enviar ahora · Aprobar todo · Modelo · Detener · Modo Plan · Vista · Más.
+
 ### Opción A: importar el perfil del repo (experimental)
 
 1. En Options+, entra a la configuración del **Actions Ring** con el perfil *Claude* seleccionado.
